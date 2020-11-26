@@ -1,14 +1,14 @@
 version: "2"
 services:
-  webapp:
-    build: .
-    container_name: webapp
-    depends_on:
-      - db
-    ports:
-      - "5000:5000"
-    networks: 
-      - webnet 
+  # webapp:
+  #   build: .
+  #   container_name: webapp
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - "5000:5000"
+  #   networks: 
+  #     - webnet 
       
 
   db:

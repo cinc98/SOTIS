@@ -12,7 +12,7 @@ services:
       
 
   db:
-    image: mysql:5.7
+    image: mysql:8
     ports:
       - "3306:3306"
     container_name: db
@@ -21,6 +21,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: user
       MYSQL_ROOT_PASSWORD: root
+      
     volumes:
       - my-db:/var/lib/mysql
     networks: 

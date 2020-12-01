@@ -1,17 +1,28 @@
 <template>
   <v-app-bar color="deep-purple accent-4" dark max-height="64px">
     <v-toolbar-title>Page title</v-toolbar-title>
-
     <v-btn
-      v-if="user.roles[0].name == 'ADMIN'"
+      v-if="user.roles[0].name == 'PROFESSOR'"
       text
       class="add-question-btn"
       @click="
         () => {
-          this.$router.push('/add-test');
+          this.$router.push('/subjects-list');
         }
       "
       >Add test</v-btn
+    >
+
+    <v-btn
+      v-if="user.roles[0].name == 'STUDENT'"
+      text
+      class="add-question-btn"
+      @click="
+        () => {
+          this.$router.push('/subjects-list');
+        }
+      "
+      >tests</v-btn
     >
     <v-spacer></v-spacer>
 
@@ -34,8 +45,8 @@
         <v-list-item
           @click="
             () => {
+              removeUser();
               this.$router.push('/');
-              removeUser;
             }
           "
         >
@@ -53,15 +64,20 @@ export default {
   name: "AppBar",
   data() {
     return {
-      user: null,
     };
   },
-  computed: {
+  methods: {
     removeUser() {
       sessionStorage.removeItem("token");
+      this.$store.commit("deleteLoggedUser");
     },
   },
-  mounted() {
+  computed:{
+    user(){
+      return this.$store.state.loggedUser
+    }
+  },
+  created() {
     axios
       .get("http://localhost:5000/user", {
         headers: {
@@ -69,7 +85,7 @@ export default {
         },
       })
       .then((response) => {
-        this.user = response.data.user;
+        this.$store.commit("addLoggedUser", response.data.user);
       })
       .catch((error) => {
         this.$router.push("/");

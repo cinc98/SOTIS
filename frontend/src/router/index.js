@@ -1,31 +1,45 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Login from '../views/Login.vue'
-import AddTest from '../components/AddTest.vue'
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Home from "../views/Home.vue";
+import Login from "../views/Login.vue";
+import AddTest from "../components/AddTest.vue";
+import SubjectsList from "../components/SubjectsList.vue";
+import TestsList from "../components/TestsList.vue";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/home',
-    name: 'Home',
+    path: "/home",
+    name: "Home",
     component: Home,
-    children: [{
-      path: '/add-test',
-      name: 'Add test',
-      component: AddTest,
-    }]
+    children: [
+      {
+        path: "/add-test",
+        name: "Add test",
+        component: AddTest,
+      },
+      {
+        path: "/subjects-list",
+        name: "subjectList",
+        component: SubjectsList,
+      },
+      {
+        path: "/tests-list",
+        name: "TestsList",
+        component: TestsList,
+      },
+    ],
   },
   {
-    path: '/',
-    name: 'Login',
-    component: Login
+    path: "/",
+    name: "Login",
+    component: Login,
   },
-]
+];
 
 const router = new VueRouter({
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

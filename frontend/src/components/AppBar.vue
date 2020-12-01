@@ -3,6 +3,7 @@
     <v-toolbar-title>Page title</v-toolbar-title>
 
     <v-btn
+      v-if="user.roles[0].name == 'ADMIN'"
       text
       class="add-question-btn"
       @click="
@@ -10,9 +11,8 @@
           this.$router.push('/add-test');
         }
       "
+      >Add test</v-btn
     >
-      Add test
-    </v-btn>
     <v-spacer></v-spacer>
 
     <v-btn icon>
@@ -35,6 +35,7 @@
           @click="
             () => {
               this.$router.push('/');
+              removeUser;
             }
           "
         >
@@ -46,8 +47,34 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "AppBar",
+  data() {
+    return {
+      user: null,
+    };
+  },
+  computed: {
+    removeUser() {
+      sessionStorage.removeItem("token");
+    },
+  },
+  mounted() {
+    axios
+      .get("http://localhost:5000/user", {
+        headers: {
+          Authorization: sessionStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        this.user = response.data.user;
+      })
+      .catch((error) => {
+        this.$router.push("/");
+      });
+  },
 };
 </script>
 

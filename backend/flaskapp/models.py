@@ -11,6 +11,8 @@ class User(db.Model):
                             backref=db.backref('users', lazy='dynamic'))
     subjects = db.relationship(
         'Subject', secondary='user_subjects', backref=db.backref('users', lazy='dynamic'))
+    tests = db.relationship('Test', backref='user',
+                            lazy='dynamic')
 
     def serialize(self):
         return {
@@ -31,6 +33,7 @@ class Role(db.Model):
             'name': self.name,
         }
 
+
 class UserRoles(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey(
@@ -43,6 +46,14 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     code = db.Column(db.String(10), nullable=False)
+    tests = db.relationship('Test', backref='subject',
+                            lazy='dynamic')
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'code': self.code,
+        }
 
 
 class UserSubjects(db.Model):
@@ -56,25 +67,35 @@ class UserSubjects(db.Model):
 class Test(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    users = db.relationship('User', secondary='user_tests',
-                            backref=db.backref('tests', lazy='dynamic'))
     questions = db.relationship(
         'Question', secondary='test_questions', backref=db.backref('tests', lazy='dynamic'))
-
-
-class UserTests(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey(
+    subject_id = db.Column(db.Integer(), db.ForeignKey(
+        'subject.id', ondelete='CASCADE'))
+    author_id = db.Column(db.Integer(), db.ForeignKey(
         'user.id', ondelete='CASCADE'))
-    test_id = db.Column(db.Integer(), db.ForeignKey(
-        'test.id', ondelete='CASCADE'))
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'author_id': self.author_id,
+            'subject_id': self.subject_id,
+
+            'questions': [question.serialize() for question in self.questions],
+        }
 
 class Question(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     text = db.Column(db.String(255), nullable=False)
-    answers = db.relationship('Answer', secondary='question_answers',
-                              backref=db.backref('question', lazy='dynamic'))
+    answers = db.relationship('Answer', backref='question',
+                              lazy='dynamic')
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'text': self.text,
+            'answers': [answer.serialize() for answer in self.answers],
+        }
 
 
 class TestQuestions(db.Model):
@@ -89,20 +110,10 @@ class Answer(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     text = db.Column(db.String(255), nullable=False)
     is_true = db.Column(db.Boolean(), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
-
-class QuestionAnswers(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    answer_id = db.Column(db.Integer(), db.ForeignKey(
-        'answer.id', ondelete='CASCADE'))
-    question_id = db.Column(db.Integer(), db.ForeignKey(
-        'question.id', ondelete='CASCADE'))
-
-
-class UserAnswers(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    answer_id = db.Column(db.Integer(), db.ForeignKey(
-        'answer.id', ondelete='CASCADE'))
-    user_id = db.Column(db.Integer(), db.ForeignKey(
-        'user.id', ondelete='CASCADE'))
-    user_answer = db.Column(db.Boolean(), nullable=False)
+    def serialize(self):
+        return {
+            'id': self.id,
+            'text': self.text,
+        }

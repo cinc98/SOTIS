@@ -5,6 +5,7 @@ import jwt
 import datetime
 from functools import wraps
 
+
 auth = Blueprint('auth', __name__)
 
 

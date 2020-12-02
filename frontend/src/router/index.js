@@ -5,6 +5,7 @@ import Login from "../views/Login.vue";
 import AddTest from "../components/AddTest.vue";
 import SubjectsList from "../components/SubjectsList.vue";
 import TestsList from "../components/TestsList.vue";
+import Test from "../components/Test.vue";
 
 Vue.use(VueRouter);
 
@@ -28,6 +29,11 @@ const routes = [
         path: "/tests-list",
         name: "TestsList",
         component: TestsList,
+      },
+      {
+        path: "/test",
+        name: "Test",
+        component: Test,
       },
     ],
   },

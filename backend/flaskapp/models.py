@@ -9,6 +9,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     roles = db.relationship('Role', secondary='user_roles',
                             backref=db.backref('users', lazy='dynamic'))
+    answers = db.relationship("UserAnswers", back_populates="user")
+
     subjects = db.relationship(
         'Subject', secondary='user_subjects', backref=db.backref('users', lazy='dynamic'))
     tests = db.relationship('Test', backref='user',
@@ -48,6 +50,7 @@ class Subject(db.Model):
     code = db.Column(db.String(10), nullable=False)
     tests = db.relationship('Test', backref='subject',
                             lazy='dynamic')
+
     def serialize(self):
         return {
             'id': self.id,
@@ -74,15 +77,16 @@ class Test(db.Model):
     author_id = db.Column(db.Integer(), db.ForeignKey(
         'user.id', ondelete='CASCADE'))
 
-    def serialize(self):
+    def serialize(self, show_correct_answers):
         return {
             'id': self.id,
             'name': self.name,
             'author_id': self.author_id,
             'subject_id': self.subject_id,
 
-            'questions': [question.serialize() for question in self.questions],
+            'questions': [question.serialize(show_correct_answers) for question in self.questions],
         }
+
 
 class Question(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -90,11 +94,11 @@ class Question(db.Model):
     answers = db.relationship('Answer', backref='question',
                               lazy='dynamic')
 
-    def serialize(self):
+    def serialize(self, show_correct_answers):
         return {
             'id': self.id,
             'text': self.text,
-            'answers': [answer.serialize() for answer in self.answers],
+            'answers': [answer.serialize(show_correct_answers) for answer in self.answers],
         }
 
 
@@ -111,9 +115,28 @@ class Answer(db.Model):
     text = db.Column(db.String(255), nullable=False)
     is_true = db.Column(db.Boolean(), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    users = db.relationship("UserAnswers", back_populates="answer")
 
-    def serialize(self):
-        return {
-            'id': self.id,
-            'text': self.text,
-        }
+    def serialize(self, show_correct_answers):
+        if show_correct_answers:
+            return {
+                'id': self.id,
+                'text': self.text,
+                'is_true': self.is_true
+            }
+        else:
+            return {
+                'id': self.id,
+                'text': self.text,
+            }
+
+
+class UserAnswers(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey(
+        'user.id', ondelete='CASCADE'))
+    answer_id = db.Column(db.Integer(), db.ForeignKey(
+        'answer.id', ondelete='CASCADE'))
+    is_true = db.Column(db.Boolean(), nullable=False)
+    answer = db.relationship("Answer", back_populates="users")
+    user = db.relationship("User", back_populates="answers")

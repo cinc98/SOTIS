@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     subjectTest: "",
     loggedUser: { roles: [{ name: "" }] },
+    testName: ""
   },
   mutations: {
     addSubjectName(state, subject) {
@@ -15,11 +16,11 @@ export default new Vuex.Store({
     addLoggedUser(state, user) {
       state.loggedUser = user;
     },
+    addTestName(state, name) {
+      state.testName = name;
+    },
     deleteLoggedUser(state){
       state.loggedUser = { roles: [{ name: "" }] };
-    },
-    deleteSubjectName(state) {
-      state.subjectTest = "";
     },
   },
   actions: {},

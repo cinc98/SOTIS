@@ -6,6 +6,7 @@ import AddTest from "../components/AddTest.vue";
 import SubjectsList from "../components/SubjectsList.vue";
 import TestsList from "../components/TestsList.vue";
 import Test from "../components/Test.vue";
+import Graph from "../components/Graph.vue";
 
 Vue.use(VueRouter);
 
@@ -34,6 +35,11 @@ const routes = [
         path: "/test",
         name: "Test",
         component: Test,
+      },
+      {
+        path: "/data-visualization",
+        name: "Graph",
+        component: Graph,
       },
     ],
   },

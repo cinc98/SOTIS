@@ -13,6 +13,18 @@
       >Add test</v-btn
     >
 
+       <v-btn
+      v-if="user.roles[0].name == 'PROFESSOR'"
+      text
+      class="add-question-btn"
+      @click="
+        () => {
+          this.$router.push('/data-visualization');
+        }
+      "
+      >data visualization</v-btn
+    >
+
     <v-btn
       v-if="user.roles[0].name == 'STUDENT'"
       text

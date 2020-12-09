@@ -35,10 +35,12 @@ export default {
         this.links = this.links.filter((l) => l.sid !== this.clickedNode.id);
         this.links = this.links.filter((l) => l.tid !== this.clickedNode.id);
         this.clickedNode = null;
+
       }
     },
     addNode() {
-      this.nodes.push({ name: this.nodeName });
+      this.nodes.push({ id: this.lastNodeId + 1, name: this.nodeName });
+      this.lastNodeId++;
       this.nodeName = null;
     },
     clickNode(event, node) {
@@ -46,9 +48,14 @@ export default {
         this.clickedNode = node;
         node._color = "green";
       } else {
-        this.links.push({ sid: this.clickedNode.id, tid: node.id });
-        this.nodes.find((x) => x.id === this.clickedNode.id)._color = "";
-        this.clickedNode = null;
+        if(this.clickedNode === node){
+          this.nodes.find((x) => x.id === node.id)._color = "";
+          this.clickedNode=null;
+        }else{
+          this.links.push({ sid: this.clickedNode.id, tid: node.id });
+          this.nodes.find((x) => x.id === this.clickedNode.id)._color = "";
+          this.clickedNode = null;
+        }
       }
     },
     clickLink(event, link) {
@@ -59,7 +66,9 @@ export default {
     return {
       nodeName: null,
       clickedNode: null,
+      lastNodeId: 8,
       nodes: [
+        { id: 0 },
         { id: 1 },
         { id: 2 },
         { id: 3 },
@@ -68,18 +77,17 @@ export default {
         { id: 6 },
         { id: 7 },
         { id: 8 },
-        { id: 9 },
       ],
       links: [
-        { sid: 1, tid: 2 },
-        { sid: 2, tid: 8 },
+        { sid: 0, tid: 1 },
+        { sid: 1, tid: 7 },
+        { sid: 2, tid: 4 },
         { sid: 3, tid: 4 },
         { sid: 4, tid: 5 },
-        { sid: 5, tid: 6 },
-        { sid: 7, tid: 8 },
-        { sid: 5, tid: 8 },
-        { sid: 3, tid: 8 },
-        { sid: 7, tid: 9 },
+        { sid: 6, tid: 7 },
+        { sid: 4, tid: 7 },
+        { sid: 2, tid: 7 },
+        { sid: 6, tid: 8 },
       ],
       nodeSize: 30,
       canvas: false,

@@ -35,7 +35,6 @@ export default {
         this.links = this.links.filter((l) => l.sid !== this.clickedNode.id);
         this.links = this.links.filter((l) => l.tid !== this.clickedNode.id);
         this.clickedNode = null;
-
       }
     },
     addNode() {

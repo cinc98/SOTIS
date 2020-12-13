@@ -48,6 +48,7 @@ class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     code = db.Column(db.String(10), nullable=False)
+    domain_id = db.Column(db.Integer(), db.ForeignKey('domain.id'))
     tests = db.relationship('Test', backref='subject',
                             lazy='dynamic')
 
@@ -72,6 +73,8 @@ class Test(db.Model):
     name = db.Column(db.String(50), nullable=False)
     questions = db.relationship(
         'Question', secondary='test_questions', backref=db.backref('tests', lazy='dynamic'))
+    sections = db.relationship('Section', backref='subject',
+                               lazy='dynamic')
     subject_id = db.Column(db.Integer(), db.ForeignKey(
         'subject.id', ondelete='CASCADE'))
     author_id = db.Column(db.Integer(), db.ForeignKey(
@@ -88,11 +91,22 @@ class Test(db.Model):
         }
 
 
+class Section(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    text = db.Column(db.String(255), nullable=False)
+    test_id = db.Column(db.Integer(), db.ForeignKey(
+        'test.id', ondelete='CASCADE'))
+    questions = db.relationship('Question', backref='subject',
+                                lazy='dynamic')
+
+
 class Question(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     text = db.Column(db.String(255), nullable=False)
+    problem_id = db.Column(db.Integer, db.ForeignKey('problem.id'))
     answers = db.relationship('Answer', backref='question',
                               lazy='dynamic')
+    section_id = db.Column(db.Integer, db.ForeignKey('section.id'))
 
     def serialize(self, show_correct_answers):
         return {
@@ -129,6 +143,43 @@ class Answer(db.Model):
                 'id': self.id,
                 'text': self.text,
             }
+
+
+class Problem(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    knowledge_space_id = db.Column(
+        db.Integer, db.ForeignKey('knowledge_space.id'))
+    questions = db.relationship('Question', backref='problem',
+                                lazy='dynamic')
+
+
+class Link(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    source_id = db.Column(db.Integer, db.ForeignKey("problem.id"))
+    target_id = db.Column(db.Integer, db.ForeignKey("problem.id"))
+    knowledge_space_id = db.Column(
+        db.Integer, db.ForeignKey('knowledge_space.id'))
+
+
+class KnowledgeSpace(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    domain_id = db.Column(db.Integer(), db.ForeignKey(
+        'domain.id', ondelete='CASCADE'))
+    problems = db.relationship('Problem', backref='knowledge_space',
+                               lazy='dynamic')
+    links = db.relationship('link', backref='knowledge_space',
+                            lazy='dynamic')
+
+
+class Domain(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    knowledge_spaces = db.relationship('KnowledgeSpace', backref='domain',
+                                       lazy='dynamic')
+    subject = db.relationship("Subject", uselist=False, backref="domain")
 
 
 class UserAnswers(db.Model):

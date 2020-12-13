@@ -1,11 +1,28 @@
 <template>
   <v-container>
+    <h2>Create graph</h2>
+    <svg>
+      <defs>
+        <marker
+          id="m-end"
+          markerWidth="10"
+          markerHeight="10"
+          refX="15"
+          refY="3"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M0,0 L0,6 L9,3 z"></path>
+        </marker>
+      </defs>
+    </svg>
     <d3-network
       :net-nodes="nodes"
       @node-click="clickNode"
       @link-click="clickLink"
       :net-links="links"
       :options="options"
+      :link-cb="lcb"
     />
     <v-text-field label="Node name" outlined v-model="nodeName"></v-text-field>
     <v-btn color="success" @click="addNode"> add node </v-btn>
@@ -29,6 +46,25 @@ export default {
     D3Network,
   },
   methods: {
+    lcb(link) {
+      link._svgAttrs = {
+        "marker-end": "url(#m-end)",
+      };
+      return link;
+    },
+    checkCyclic(sid, tid) {
+      var vm = this;
+      var isCyclic = false;
+      this.links.forEach(function (l) {
+        if (l.tid === sid) {
+          if (l.sid === tid) {
+            vm.isCyclic = true;
+          } else {
+            vm.checkCyclic(l.sid, tid);
+          }
+        }
+      });
+    },
     deleteNode() {
       if (this.clickedNode !== null) {
         this.nodes = this.nodes.filter((n) => n !== this.clickedNode);
@@ -47,13 +83,19 @@ export default {
         this.clickedNode = node;
         node._color = "green";
       } else {
-        if(this.clickedNode === node){
+        if (this.clickedNode === node) {
           this.nodes.find((x) => x.id === node.id)._color = "";
-          this.clickedNode=null;
-        }else{
-          this.links.push({ sid: this.clickedNode.id, tid: node.id });
-          this.nodes.find((x) => x.id === this.clickedNode.id)._color = "";
           this.clickedNode = null;
+          this.isCyclic = false;
+        } else {
+          this.checkCyclic(this.clickedNode.id, node.id);
+
+          if (!this.isCyclic) {
+            this.links.push({ sid: this.clickedNode.id, tid: node.id });
+            this.nodes.find((x) => x.id === this.clickedNode.id)._color = "";
+            this.clickedNode = null;
+            this.isCyclic = false;
+          }
         }
       }
     },
@@ -63,32 +105,13 @@ export default {
   },
   data() {
     return {
+      isCyclic: false,
       nodeName: null,
       clickedNode: null,
       lastNodeId: 8,
-      nodes: [
-        { id: 0 },
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-        { id: 4 },
-        { id: 5 },
-        { id: 6 },
-        { id: 7 },
-        { id: 8 },
-      ],
-      links: [
-        { sid: 0, tid: 1 },
-        { sid: 1, tid: 7 },
-        { sid: 2, tid: 4 },
-        { sid: 3, tid: 4 },
-        { sid: 4, tid: 5 },
-        { sid: 6, tid: 7 },
-        { sid: 4, tid: 7 },
-        { sid: 2, tid: 7 },
-        { sid: 6, tid: 8 },
-      ],
-      nodeSize: 30,
+      nodes: [],
+      links: [],
+      nodeSize: 20,
       canvas: false,
     };
   },
@@ -101,10 +124,15 @@ export default {
         nodeLabels: true,
         linkLabels: true,
         canvas: this.canvas,
+        linkWidth: 2,
       };
     },
   },
 };
 </script>
 
-<style src="vue-d3-network/dist/vue-d3-network.css"></style>
+<style src="vue-d3-network/dist/vue-d3-network.css">
+path {
+  fill: none;
+}
+</style>

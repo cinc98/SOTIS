@@ -22,6 +22,7 @@ class User(db.Model):
             'username': self.username,
             'email': self.email,
             'roles': [role.serialize() for role in self.roles],
+            'subjects': [subject.serialize() for subject in self.subjects],
         }
 
 

@@ -13,7 +13,7 @@
       >Add test</v-btn
     >
 
-       <v-btn
+    <v-btn
       v-if="user.roles[0].name == 'PROFESSOR'"
       text
       class="add-question-btn"
@@ -25,7 +25,7 @@
       >data visualization</v-btn
     >
 
-       <v-btn
+    <v-btn
       v-if="user.roles[0].name == 'ADMIN'"
       text
       class="add-question-btn"
@@ -35,6 +35,18 @@
         }
       "
       >add subject</v-btn
+    >
+
+        <v-btn
+      v-if="user.roles[0].name == 'ADMIN'"
+      text
+      class="add-question-btn"
+      @click="
+        () => {
+          this.$router.push('/users');
+        }
+      "
+      >users</v-btn
     >
 
     <v-btn
@@ -87,8 +99,7 @@ import axios from "axios";
 export default {
   name: "AppBar",
   data() {
-    return {
-    };
+    return {};
   },
   methods: {
     removeUser() {
@@ -96,10 +107,10 @@ export default {
       this.$store.commit("deleteLoggedUser");
     },
   },
-  computed:{
-    user(){
-      return this.$store.state.loggedUser
-    }
+  computed: {
+    user() {
+      return this.$store.state.loggedUser;
+    },
   },
   created() {
     axios

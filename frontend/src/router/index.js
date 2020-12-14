@@ -8,6 +8,10 @@ import TestsList from "../components/TestsList.vue";
 import Test from "../components/Test.vue";
 import Graph from "../components/Graph.vue";
 import AddSubject from "../components/AddSubject.vue"
+import UsersList from "../components/UsersList.vue"
+
+
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -45,6 +49,11 @@ const routes = [
         path: "/add-subject",
         name: "AddSubject",
         component: AddSubject,
+      },
+      {
+        path: "/users",
+        name: "UsersList",
+        component: UsersList,
       },
     ],
   },

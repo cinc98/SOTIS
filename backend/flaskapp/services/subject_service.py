@@ -9,7 +9,6 @@ def addSubject(subject):
     subject_name = subject.get('subject_name')
 
     subject = Subject.query.filter_by(name=subject_name).first()
-
     if subject:
         return jsonify({'message': "this subject name is taken"}), 400
 
@@ -19,3 +18,7 @@ def addSubject(subject):
     db.session.commit()
 
     return jsonify({'message': "successfully added subject"}), 200
+
+
+def getSubjects():
+    return jsonify({'subjects': [s.serialize() for s in Subject.query.all()]}), 200

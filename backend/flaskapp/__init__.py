@@ -22,4 +22,8 @@ app.register_blueprint(auth_blueprint)
 from .routes import routes as routes_blueprint
 app.register_blueprint(routes_blueprint)
 
+from .routess.subject_routes import subject as subject_blueprint
+app.register_blueprint(subject_blueprint)
+
+
 from flaskapp import routes

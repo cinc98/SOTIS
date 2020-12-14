@@ -25,6 +25,18 @@
       >data visualization</v-btn
     >
 
+       <v-btn
+      v-if="user.roles[0].name == 'ADMIN'"
+      text
+      class="add-question-btn"
+      @click="
+        () => {
+          this.$router.push('/add-subject');
+        }
+      "
+      >add subject</v-btn
+    >
+
     <v-btn
       v-if="user.roles[0].name == 'STUDENT'"
       text

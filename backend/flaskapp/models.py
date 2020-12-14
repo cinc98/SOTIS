@@ -46,8 +46,8 @@ class UserRoles(db.Model):
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    code = db.Column(db.String(10), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    code = db.Column(db.String(255), nullable=False)
     domain_id = db.Column(db.Integer(), db.ForeignKey('domain.id'))
     tests = db.relationship('Test', backref='subject',
                             lazy='dynamic')
@@ -169,7 +169,7 @@ class KnowledgeSpace(db.Model):
         'domain.id', ondelete='CASCADE'))
     problems = db.relationship('Problem', backref='knowledge_space',
                                lazy='dynamic')
-    links = db.relationship('link', backref='knowledge_space',
+    links = db.relationship('Link', backref='knowledge_space',
                             lazy='dynamic')
 
 

@@ -2,7 +2,6 @@ from flaskapp.models import *
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flaskapp.auth import token_required
 from flaskapp import db, app, bcrypt
-
 routes = Blueprint('routes', __name__)
 
 

@@ -7,7 +7,7 @@ import SubjectsList from "../components/SubjectsList.vue";
 import TestsList from "../components/TestsList.vue";
 import Test from "../components/Test.vue";
 import Graph from "../components/Graph.vue";
-
+import AddSubject from "../components/AddSubject.vue"
 Vue.use(VueRouter);
 
 const routes = [
@@ -40,6 +40,11 @@ const routes = [
         path: "/data-visualization",
         name: "Graph",
         component: Graph,
+      },
+      {
+        path: "/add-subject",
+        name: "AddSubject",
+        component: AddSubject,
       },
     ],
   },

@@ -1,6 +1,8 @@
 <template>
-  <v-container>
+  <v-container ref="graphContainer">
     <h2>Create graph</h2>
+        <v-text-field label="KS Title" outlined v-model="ksTitle"></v-text-field>
+
     <svg>
       <defs>
         <marker
@@ -25,15 +27,28 @@
       :link-cb="lcb"
     />
     <v-text-field label="Node name" outlined v-model="nodeName"></v-text-field>
-    <v-btn color="success" @click="addNode"> add node </v-btn>
-    <v-tooltip bottom>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn @click="deleteNode" color="error" dark v-bind="attrs" v-on="on">
-          delete node
-        </v-btn>
-      </template>
-      <span>select the node you want to delete</span>
-    </v-tooltip>
+    <v-row justify="end">
+      <v-col>
+        <v-btn color="success" @click="addNode"> add node </v-btn>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              @click="deleteNode"
+              color="error"
+              dark
+              v-bind="attrs"
+              v-on="on"
+            >
+              delete node
+            </v-btn>
+          </template>
+          <span>select the node you want to delete</span>
+        </v-tooltip>
+      </v-col>
+      <v-col class="text-right" >
+        <v-btn color="primary" @click="saveGraph"> save graph </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -73,6 +88,12 @@ export default {
         this.clickedNode = null;
       }
     },
+    saveGraph(){
+      console.log(this.ksTitle);
+      console.log(this.links);
+      console.log(this.nodes);
+
+    },
     addNode() {
       this.nodes.push({ id: this.lastNodeId + 1, name: this.nodeName });
       this.lastNodeId++;
@@ -106,6 +127,8 @@ export default {
   data() {
     return {
       isCyclic: false,
+      ksTitle:null,
+      containerWidth: 0,
       nodeName: null,
       clickedNode: null,
       lastNodeId: 8,
@@ -116,10 +139,13 @@ export default {
     };
   },
   computed: {
+    calculateHeightAndWidth() {
+      this.containerWidth = this.$refs.graphContainer.clientWidth;
+    },
     options() {
       return {
         force: 3000,
-        size: { w: 600, h: 600 },
+        size: { w: this.containerWidth, h: 500 },
         nodeSize: this.nodeSize,
         nodeLabels: true,
         linkLabels: true,

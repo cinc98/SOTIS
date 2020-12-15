@@ -7,6 +7,7 @@
           <tr>
             <th class="text-left">Label</th>
             <th class="text-left">Subject name</th>
+            <th class="text-left">Domain</th>
             <th class="text-left"></th>
             <th class="text-left"></th>
           </tr>
@@ -15,6 +16,7 @@
           <tr v-for="s in subjects" :key="s.id">
             <td>{{ s.code }}</td>
             <td>{{ s.name }}</td>
+            <td>{{ s.domain.title }}</td>
             <td>
               <v-btn
                 v-if="user.roles[0].name == 'PROFESSOR'"
@@ -24,6 +26,15 @@
                 @click="setSubjectName(s.name)"
               >
                 New test
+              </v-btn>
+              <v-btn
+                v-if="user.roles[0].name == 'PROFESSOR' && s.domain == '' "
+                class="ma-2"
+                outlined
+                color="deep-purple accent-4"
+                @click="addDomain(s.name)"
+              >
+                add domain
               </v-btn>
             </td>
             <td>
@@ -63,6 +74,10 @@ export default {
     seeTest(name) {
       this.$store.commit("addSubjectName", name);
       this.$router.push("/tests-list");
+    },
+    addDomain(name) {
+      this.$store.commit("addSubjectName", name);
+      this.$router.push("/add-domain");
     },
   },
   created() {

@@ -10,7 +10,7 @@
           this.$router.push('/subjects-list');
         }
       "
-      >Add test</v-btn
+      >Subjects</v-btn
     >
 
     <v-btn
@@ -19,10 +19,10 @@
       class="add-question-btn"
       @click="
         () => {
-          this.$router.push('/data-visualization');
+          this.$router.push('/domains');
         }
       "
-      >data visualization</v-btn
+      >domains</v-btn
     >
 
     <v-btn

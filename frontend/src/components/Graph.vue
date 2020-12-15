@@ -1,7 +1,7 @@
 <template>
   <v-container ref="graphContainer">
     <h2>Create graph</h2>
-        <v-text-field label="KS Title" outlined v-model="ksTitle"></v-text-field>
+    <v-text-field label="KS Title" outlined v-model="ksTitle"></v-text-field>
 
     <svg>
       <defs>
@@ -45,7 +45,7 @@
           <span>select the node you want to delete</span>
         </v-tooltip>
       </v-col>
-      <v-col class="text-right" >
+      <v-col class="text-right">
         <v-btn color="primary" @click="saveGraph"> save graph </v-btn>
       </v-col>
     </v-row>
@@ -69,7 +69,6 @@ export default {
     },
     checkCyclic(sid, tid) {
       var vm = this;
-      var isCyclic = false;
       this.links.forEach(function (l) {
         if (l.tid === sid) {
           if (l.sid === tid) {
@@ -77,6 +76,32 @@ export default {
           } else {
             vm.checkCyclic(l.sid, tid);
           }
+        }
+      });
+    },
+    checkTransitive(sid, tid) {
+      var vm = this;
+      this.links.forEach(function (l) {
+        if (l.sid === sid) {
+          if (l.tid === tid) {
+            vm.isTransitive = true;
+          } else {
+            vm.checkTransitive(l.tid, tid);
+          }
+        }
+      });
+    },
+    deleteLinkTransitive(sid, tid) {
+      var vm = this;
+      this.links.forEach(function (l) {
+        if (l.tid === sid) {
+          vm.links.forEach(function (li, index) {
+            if (li.tid === tid && li.sid === l.sid) {
+              vm.links.splice(index, 1);
+              
+            }
+          });
+          vm.deleteLinkTransitive(l.sid, tid);
         }
       });
     },
@@ -88,11 +113,10 @@ export default {
         this.clickedNode = null;
       }
     },
-    saveGraph(){
+    saveGraph() {
       console.log(this.ksTitle);
       console.log(this.links);
       console.log(this.nodes);
-
     },
     addNode() {
       this.nodes.push({ id: this.lastNodeId + 1, name: this.nodeName });
@@ -108,14 +132,17 @@ export default {
           this.nodes.find((x) => x.id === node.id)._color = "";
           this.clickedNode = null;
           this.isCyclic = false;
+          this.isTransitive = false;
         } else {
           this.checkCyclic(this.clickedNode.id, node.id);
-
-          if (!this.isCyclic) {
+          this.checkTransitive(this.clickedNode.id, node.id);
+          if (!this.isCyclic && !this.isTransitive) {
             this.links.push({ sid: this.clickedNode.id, tid: node.id });
+            this.deleteLinkTransitive(this.clickedNode.id, node.id);
             this.nodes.find((x) => x.id === this.clickedNode.id)._color = "";
             this.clickedNode = null;
             this.isCyclic = false;
+            this.isTransitive = false;
           }
         }
       }
@@ -127,7 +154,8 @@ export default {
   data() {
     return {
       isCyclic: false,
-      ksTitle:null,
+      isTransitive: false,
+      ksTitle: null,
       containerWidth: 0,
       nodeName: null,
       clickedNode: null,

@@ -9,7 +9,8 @@ import Test from "../components/Test.vue";
 import Graph from "../components/Graph.vue";
 import AddSubject from "../components/AddSubject.vue"
 import UsersList from "../components/UsersList.vue"
-
+import AddDomain from "../components/AddDomain.vue"
+import DomainsList from "../components/DomainsList.vue"
 
 
 Vue.use(VueRouter);
@@ -54,6 +55,16 @@ const routes = [
         path: "/users",
         name: "UsersList",
         component: UsersList,
+      },
+      {
+        path: "/add-domain",
+        name: "AddDomain",
+        component: AddDomain,
+      },
+      {
+        path: "/domains",
+        name: "DomainsList",
+        component: DomainsList,
       },
     ],
   },

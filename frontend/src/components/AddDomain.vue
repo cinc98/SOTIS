@@ -1,16 +1,16 @@
 <template>
   <v-container>
-    <h2>Add Subject</h2>
+    <h2>Add Domain</h2>
     <form @submit.prevent="submit">
       <v-text-field
-        v-model="subjectCode"
-        label="Subject code"
+        v-model="domainTitle"
+        label="Domain title"
         required
       ></v-text-field>
 
       <v-text-field
-        v-model="subjectName"
-        label="Subject name"
+        v-model="domainDescription"
+        label="Domain description"
         required
       ></v-text-field>
 
@@ -23,21 +23,22 @@
 import axios from "axios";
 
 export default {
-  name: "AddSubject",
+  name: "AddDomain",
   data() {
     return {
-      subjectCode: "",
-      subjectName: "",
+      domainTitle: "",
+      domainDescription: "",
     };
   },
   methods: {
     submit() {
       axios
         .post(
-          `http://localhost:5000/add-subject`,
+          `http://localhost:5000/add-domain`,
           {
-            subject_name: this.subjectName,
-            subject_code: this.subjectCode,
+            domain_title: this.domainTitle,
+            domain_description: this.domainDescription,
+            subject_id: this.$store.state.subjectTest,
           },
           {
             headers: {
@@ -47,8 +48,8 @@ export default {
         )
         .then((response) => {
           alert(response.data.message);
-          this.subjectCode = "";
-          this.subjectName = "";
+          this.domainTitle = "";
+          this.domainDescription = "";
         })
         .catch((error) => {
           alert(error.response.data.message);

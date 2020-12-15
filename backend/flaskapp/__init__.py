@@ -28,4 +28,7 @@ app.register_blueprint(subject_blueprint)
 from .routess.user_routes import user as user_blueprint
 app.register_blueprint(user_blueprint)
 
+from .routess.ks_routes import ks as ks_blueprint
+app.register_blueprint(ks_blueprint)
+
 from flaskapp import routes

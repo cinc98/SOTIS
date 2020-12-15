@@ -54,6 +54,7 @@
 
 <script>
 import D3Network from "vue-d3-network";
+import axios from "axios";
 
 export default {
   name: "Graph",
@@ -98,7 +99,6 @@ export default {
           vm.links.forEach(function (li, index) {
             if (li.tid === tid && li.sid === l.sid) {
               vm.links.splice(index, 1);
-              
             }
           });
           vm.deleteLinkTransitive(l.sid, tid);
@@ -114,9 +114,42 @@ export default {
       }
     },
     saveGraph() {
-      console.log(this.ksTitle);
-      console.log(this.links);
-      console.log(this.nodes);
+      var tempLinks = [];
+      var tempNodes = [];
+      for (let l of this.links.entries()) {
+        tempLinks.push({
+          source_name: l[1].source.name,
+          target_name: l[1].target.name,
+        });
+      }
+      for (let n of this.nodes.entries()) {
+        tempNodes.push({ node_name: n[1].name });
+      }
+
+      axios
+        .post(
+          "http://localhost:5000/add-ks",
+          {
+            ks_title: this.ksTitle,
+            domain_title: this.$store.state.domainTitle,
+            nodes: tempNodes,
+            links: tempLinks,
+          },
+          {
+            headers: {
+              Authorization: sessionStorage.getItem("token"),
+            },
+          }
+        )
+        .then((response) => {
+          alert(response.data.message);
+          this.links = [];
+          this.nodes = [];
+          this.ksTitle = "";
+        })
+        .catch((error) => {
+          alert(error);
+        });
     },
     addNode() {
       this.nodes.push({ id: this.lastNodeId + 1, name: this.nodeName });

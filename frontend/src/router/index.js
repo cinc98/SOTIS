@@ -42,7 +42,7 @@ const routes = [
         component: Test,
       },
       {
-        path: "/data-visualization",
+        path: "/knowledge-space",
         name: "Graph",
         component: Graph,
       },

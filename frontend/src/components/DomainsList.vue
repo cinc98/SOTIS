@@ -8,6 +8,7 @@
             <th class="text-left">Domain title</th>
             <th class="text-left">Domain description</th>
             <th class="text-left">Subject</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -15,6 +16,16 @@
             <td>{{ d.domain.title }}</td>
             <td>{{ d.domain.description }}</td>
             <td>{{ d.name }}</td>
+            <th>
+              <v-btn
+                class="ma-2"
+                outlined
+                color="deep-purple accent-4"
+                @click="addKnowledgespace(d.domain.title)"
+              >
+                add knowledge space
+              </v-btn>
+            </th>
           </tr>
         </tbody>
       </template>
@@ -31,7 +42,12 @@ export default {
       domains: null,
     };
   },
-  methods: {},
+  methods: {
+    addKnowledgespace(domainTitle) {
+      this.$store.commit("addDomainTitle", domainTitle);
+      this.$router.push("/knowledge-space");
+    },
+  },
   created() {
     axios
       .get(
@@ -43,7 +59,9 @@ export default {
         }
       )
       .then((response) => {
-        this.domains = response.data.user_subjects;
+        this.domains = response.data.user_subjects.filter(
+          (d) => d.domain !== ""
+        );
       })
       .catch((error) => {
         this.$router.push("/");

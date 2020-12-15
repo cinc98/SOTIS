@@ -7,11 +7,15 @@ export default new Vuex.Store({
   state: {
     subjectTest: "",
     loggedUser: { roles: [{ name: "" }] },
-    testName: ""
+    testName: "",
+    domainTitle: ""
   },
   mutations: {
     addSubjectName(state, subject) {
       state.subjectTest = subject;
+    },
+    addDomainTitle(state, title) {
+      state.domainTitle = title;
     },
     addLoggedUser(state, user) {
       state.loggedUser = user;

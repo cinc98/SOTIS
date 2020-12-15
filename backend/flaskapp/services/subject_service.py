@@ -12,6 +12,11 @@ def add_subject(subject):
     if subject:
         return jsonify({'message': "this subject name is taken"}), 400
 
+
+    subject = Subject.query.filter_by(code=subject_code).first()
+    if subject:
+        return jsonify({'message': "this subject code is taken"}), 400
+
     new_subject = Subject(name=subject_name, code=subject_code)
 
     db.session.add(new_subject)
@@ -29,6 +34,10 @@ def add_domain(domain):
     subject = Subject.query.filter_by(name=subject_id).first()
     if not subject:
         return jsonify({'message': "this subject dont exist"}), 400
+
+    domain = Domain.query.filter_by(title=domain_title).first()
+    if domain:
+        return jsonify({'message': "this domain title is taken"}), 400
 
     subject.domain = Domain(title=domain_title, description=domain_description)
     db.session.add(subject)

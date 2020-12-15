@@ -1,13 +1,15 @@
 <template>
   <v-container>
-      <h1>Subjects</h1>
+    <h1>Subjects</h1>
     <v-simple-table>
       <template>
         <thead>
           <tr>
             <th class="text-left">Label</th>
             <th class="text-left">Subject name</th>
-            <th class="text-left">Domain</th>
+            <th class="text-left" v-if="user.roles[0].name == 'PROFESSOR'">
+              Domain
+            </th>
             <th class="text-left"></th>
             <th class="text-left"></th>
           </tr>
@@ -16,7 +18,9 @@
           <tr v-for="s in subjects" :key="s.id">
             <td>{{ s.code }}</td>
             <td>{{ s.name }}</td>
-            <td>{{ s.domain.title }}</td>
+            <td v-if="user.roles[0].name == 'PROFESSOR'">
+              {{ s.domain.title }}
+            </td>
             <td>
               <v-btn
                 v-if="user.roles[0].name == 'PROFESSOR'"
@@ -28,7 +32,7 @@
                 New test
               </v-btn>
               <v-btn
-                v-if="user.roles[0].name == 'PROFESSOR' && s.domain == '' "
+                v-if="user.roles[0].name == 'PROFESSOR' && s.domain == ''"
                 class="ma-2"
                 outlined
                 color="deep-purple accent-4"

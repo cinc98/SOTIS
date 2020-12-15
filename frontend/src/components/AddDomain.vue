@@ -50,6 +50,7 @@ export default {
           alert(response.data.message);
           this.domainTitle = "";
           this.domainDescription = "";
+          this.$router.push("/subjects-list");
         })
         .catch((error) => {
           alert(error.response.data.message);

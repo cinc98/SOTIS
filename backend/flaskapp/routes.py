@@ -113,7 +113,7 @@ def finishTest(current_user):
     user = User.query.filter_by(id=student_id).first()
 
     if not user:
-        return jsonify({'message': "student is not exist"}), 400
+        return jsonify({'message': "student dont exist"}), 400
 
     for answer in answers:
         ua = UserAnswers(is_true=answer['is_true'])

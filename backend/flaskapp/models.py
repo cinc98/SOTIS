@@ -50,6 +50,8 @@ class Subject(db.Model):
     name = db.Column(db.String(255), nullable=False)
     code = db.Column(db.String(255), nullable=False)
     domain_id = db.Column(db.Integer(), db.ForeignKey('domain.id'))
+    domain = db.relationship('Domain', back_populates="subject")
+
     tests = db.relationship('Test', backref='subject',
                             lazy='dynamic')
 
@@ -58,6 +60,7 @@ class Subject(db.Model):
             'id': self.id,
             'name': self.name,
             'code': self.code,
+            'domain': self.domain.serialize() if self.domain != None else ''
         }
 
 
@@ -180,7 +183,15 @@ class Domain(db.Model):
     description = db.Column(db.String(255), nullable=False)
     knowledge_spaces = db.relationship('KnowledgeSpace', backref='domain',
                                        lazy='dynamic')
-    subject = db.relationship("Subject", uselist=False, backref="domain")
+    subject = db.relationship(
+        'Subject', uselist=False, back_populates="domain", )
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+        }
 
 
 class UserAnswers(db.Model):

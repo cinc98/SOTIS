@@ -146,9 +146,11 @@ export default {
           this.links = [];
           this.nodes = [];
           this.ksTitle = "";
+          this.$router.push("/knowledge-spaces");
+
         })
         .catch((error) => {
-          alert(error);
+          alert(error.response.data.message);
         });
     },
     addNode() {
@@ -192,7 +194,7 @@ export default {
       containerWidth: 0,
       nodeName: null,
       clickedNode: null,
-      lastNodeId: 8,
+      lastNodeId: 0,
       nodes: [],
       links: [],
       nodeSize: 20,

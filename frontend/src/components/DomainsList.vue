@@ -21,6 +21,14 @@
                 class="ma-2"
                 outlined
                 color="deep-purple accent-4"
+                @click="getKnowledgeSpaces(d.domain.title)"
+              >
+                knowledge spaces
+              </v-btn>
+              <v-btn
+                class="ma-2"
+                outlined
+                color="deep-purple accent-4"
                 @click="addKnowledgespace(d.domain.title)"
               >
                 add knowledge space
@@ -45,7 +53,11 @@ export default {
   methods: {
     addKnowledgespace(domainTitle) {
       this.$store.commit("addDomainTitle", domainTitle);
-      this.$router.push("/knowledge-space");
+      this.$router.push("/add-knowledge-space");
+    },
+    getKnowledgeSpaces(domainTitle) {
+      this.$store.commit("addDomainTitle", domainTitle);
+      this.$router.push("/knowledge-spaces");
     },
   },
   created() {

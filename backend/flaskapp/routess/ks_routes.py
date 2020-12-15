@@ -11,3 +11,17 @@ def add_ks(current_user):
     data = request.get_json()
 
     return ks_service.add_ks(data)
+
+
+@ks.route('/kss/<string:domain_title>', methods=['GET'])
+@token_required
+def get_ks_by_domain(current_user, domain_title):
+
+    return ks_service.get_ks_by_domain(domain_title)
+
+
+@ks.route('/ks/<string:ks_title>', methods=['GET'])
+@token_required
+def get_ks_by_title(current_user, ks_title):
+    
+    return ks_service.get_ks_by_title(ks_title)

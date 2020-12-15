@@ -2,6 +2,27 @@ from flaskapp.models import KnowledgeSpace, Domain, Problem, Link
 from flaskapp import db
 from flask import jsonify
 
+def get_ks_by_domain(domain_title):
+
+    domain = Domain.query.filter_by(title=domain_title).first()
+
+    if not domain:
+        return jsonify({'message': "this domain dont exist"}), 400
+
+    knowledge_spaces = domain.knowledge_spaces
+
+    return jsonify({'knowledge_spaces': [ks.serialize() for ks in knowledge_spaces]}), 200
+
+def get_ks_by_title(ks_title):
+    
+    ks = KnowledgeSpace.query.filter_by(title=ks_title).first()
+
+    if not ks:
+        return jsonify({'message': "this knowledge space dont exist"}), 400
+
+
+    return jsonify({'knowledge_space': ks.serialize()}), 200
+
 
 def add_ks(data):
 
@@ -11,9 +32,13 @@ def add_ks(data):
     links = data.get('links')
 
     domain = Domain.query.filter_by(title=domain_title).first()
+    kss = KnowledgeSpace.query.filter_by(title=ks_title).first()
 
     if not domain:
         return jsonify({'message': "this domain dont exist"}), 400
+
+    if kss:
+        return jsonify({'message': "this knowledge space title is taken"}), 400
 
     ks = KnowledgeSpace(title=ks_title, domain_id=domain.id)
 

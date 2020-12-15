@@ -157,6 +157,13 @@ class Problem(db.Model):
     questions = db.relationship('Question', backref='problem',
                                 lazy='dynamic')
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.title,
+
+        }
+
 
 class Link(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -164,6 +171,13 @@ class Link(db.Model):
     target_id = db.Column(db.Integer, db.ForeignKey("problem.id"))
     knowledge_space_id = db.Column(
         db.Integer, db.ForeignKey('knowledge_space.id'))
+
+    def serialize(self):
+        return {
+            'sid': self.source_id,
+            'tid': self.target_id,
+
+        }
 
 
 class KnowledgeSpace(db.Model):
@@ -175,6 +189,15 @@ class KnowledgeSpace(db.Model):
                                lazy='dynamic')
     links = db.relationship('Link', backref='knowledge_space',
                             lazy='dynamic')
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'problems': [problem.serialize() for problem in self.problems],
+            'links': [link.serialize() for link in self.links],
+
+        }
 
 
 class Domain(db.Model):

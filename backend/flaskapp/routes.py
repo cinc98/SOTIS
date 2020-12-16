@@ -26,7 +26,7 @@ def createTest(current_user):
     author = data.get('author')
     subject_name = data.get('subject_name')
     test_name = data.get('test_name')
-    questions = data.get('questions')
+    sections = data.get('sections')
 
     user = User.query.filter_by(username=author).first()
 
@@ -37,15 +37,22 @@ def createTest(current_user):
 
     t = Test(name=test_name)
 
-    for question in questions:
-        q = Question(text=question['text'])
-        for answer in question['answers']:
-            a = Answer(is_true=answer['is_true'], text=answer['text'])
-            db.session.add(a)
-            q.answers.append(a)
+    for section in sections:
+        s = Section(text=section['text'])
+        for question in section['questions']:
+            p = Problem.query.filter_by(id=question['problem']).first()
+            q = Question(text=question['text'])
+            p.questions.append(q)
+            s.questions.append(q)
+            for answer in question['answers']:
+                a = Answer(is_true=answer['is_true'], text=answer['text'])
+                db.session.add(a)
+                q.answers.append(a)
 
-        t.questions.append(q)
-        db.session.add(q)
+            t.questions.append(q)
+            db.session.add(q)
+        t.sections.append(s)
+        db.session.add(s)
 
     user.tests.append(t)
     subject.tests.append(t)

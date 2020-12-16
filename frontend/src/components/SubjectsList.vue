@@ -28,6 +28,7 @@
                 outlined
                 color="deep-purple accent-4"
                 @click="setSubjectName(s.name)"
+                :disabled="s.domain == ''"
               >
                 New test
               </v-btn>

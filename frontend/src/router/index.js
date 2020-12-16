@@ -12,7 +12,6 @@ import UsersList from "../components/UsersList.vue"
 import AddDomain from "../components/AddDomain.vue"
 import DomainsList from "../components/DomainsList.vue"
 import KnowledgeSpacesList from "../components/KnowledgeSpacesList.vue"
-import GraphView from "../components/GraphView.vue"
 
 Vue.use(VueRouter);
 
@@ -71,11 +70,6 @@ const routes = [
         path: "/knowledge-spaces",
         name: "KnowledgeSpacesList",
         component: KnowledgeSpacesList,
-      },
-      {
-        path: "/knowledge-space",
-        name: "GraphView",
-        component: GraphView,
       },
     ],
   },

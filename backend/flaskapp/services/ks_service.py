@@ -1,4 +1,4 @@
-from flaskapp.models import KnowledgeSpace, Domain, Problem, Link
+from flaskapp.models import KnowledgeSpace, Domain, Problem, Link, Subject
 from flaskapp import db
 from flask import jsonify
 
@@ -22,6 +22,33 @@ def get_ks_by_title(ks_title):
 
 
     return jsonify({'knowledge_space': ks.serialize()}), 200
+
+def get_ks_by_id(ks_id):
+    
+    ks = KnowledgeSpace.query.filter_by(id=ks_id).first()
+
+    if not ks:
+        return jsonify({'message': "this knowledge space dont exist"}), 400
+
+
+    return jsonify({'knowledge_space': ks.serialize()}), 200
+
+def get_ks_by_subject(subject_name):
+    
+    subject = Subject.query.filter_by(name=subject_name).first()
+
+    if not subject:
+        return jsonify({'message': "this subject dont exist"}), 400
+
+    domain = subject.domain
+
+    if not domain:
+        return jsonify({'message': "this subject dont have domain"}), 400
+
+
+    knowledge_spaces = domain.knowledge_spaces
+
+    return jsonify({'knowledge_spaces': [ks.serialize() for ks in knowledge_spaces]}), 200
 
 
 def add_ks(data):

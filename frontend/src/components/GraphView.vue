@@ -1,28 +1,31 @@
 <template>
-  <v-container ref="graphContainer">
-    <h2>Knowledge Space: {{this.$store.state.ksTitle}}</h2>
-    <svg>
-      <defs>
-        <marker
-          id="m-end"
-          markerWidth="10"
-          markerHeight="10"
-          refX="15"
-          refY="3"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path d="M0,0 L0,6 L9,3 z"></path>
-        </marker>
-      </defs>
-    </svg>
-    <d3-network
-      :net-nodes="nodes"
-      :net-links="links"
-      :options="options"
-      :link-cb="lcb"
-    />
-  </v-container>
+  <v-dialog v-model="show"  persistent width="1000px">
+    <v-card  >
+      <h2>Knowledge Space: {{ this.$store.state.ksTitle }}</h2>
+      <svg>
+        <defs>
+          <marker
+            id="m-end"
+            markerWidth="10"
+            markerHeight="10"
+            refX="15"
+            refY="3"
+            orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <path d="M0,0 L0,6 L9,3 z"></path>
+          </marker>
+        </defs>
+      </svg>
+      <d3-network
+        :net-nodes="nodes"
+        :net-links="links"
+        :options="options"
+        :link-cb="lcb"
+      />
+      <v-btn color="blue darken-1" text @click="dialogToggle">Close</v-btn>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -34,11 +37,10 @@ export default {
   components: {
     D3Network,
   },
+  props: ["dialogToggle", "show", "nodes", "links"],
   data() {
     return {
       containerWidth: 0,
-      nodes: [],
-      links: [],
       nodeSize: 20,
       canvas: false,
     };
@@ -51,29 +53,14 @@ export default {
       return link;
     },
   },
-  created() {
-    axios
-      .get(`http://localhost:5000/ks/${this.$store.state.ksTitle}`, {
-        headers: {
-          Authorization: sessionStorage.getItem("token"),
-        },
-      })
-      .then((response) => {
-        this.nodes = response.data.knowledge_space.problems;
-        this.links = response.data.knowledge_space.links;
-      })
-      .catch((error) => {
-        this.$router.push("/");
-      });
-  },
   computed: {
     calculateHeightAndWidth() {
-      this.containerWidth = this.$refs.graphContainer.clientWidth;
+      this.containerWidth = this.$refs.graphCard.clientWidth;
     },
     options() {
       return {
         force: 3000,
-        size: { w: this.containerWidth, h: 700 },
+        size: { w: 1000, h: 700 },
         nodeSize: this.nodeSize,
         nodeLabels: true,
         linkLabels: true,
@@ -89,4 +76,6 @@ export default {
 path {
   fill: none;
 }
+
+
 </style>

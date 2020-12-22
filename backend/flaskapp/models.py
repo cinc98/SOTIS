@@ -77,8 +77,6 @@ class Test(db.Model):
     name = db.Column(db.String(50), nullable=False)
     questions = db.relationship(
         'Question', secondary='test_questions', backref=db.backref('tests', lazy='dynamic'))
-    sections = db.relationship('Section', backref='subject',
-                               lazy='dynamic')
     subject_id = db.Column(db.Integer(), db.ForeignKey(
         'subject.id', ondelete='CASCADE'))
     author_id = db.Column(db.Integer(), db.ForeignKey(
@@ -95,28 +93,19 @@ class Test(db.Model):
         }
 
 
-class Section(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    text = db.Column(db.String(255), nullable=False)
-    test_id = db.Column(db.Integer(), db.ForeignKey(
-        'test.id', ondelete='CASCADE'))
-    questions = db.relationship('Question', backref='subject',
-                                lazy='dynamic')
-
-
 class Question(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     text = db.Column(db.String(255), nullable=False)
     problem_id = db.Column(db.Integer, db.ForeignKey('problem.id'))
     answers = db.relationship('Answer', backref='question',
                               lazy='dynamic')
-    section_id = db.Column(db.Integer, db.ForeignKey('section.id'))
 
     def serialize(self, show_correct_answers):
         return {
             'id': self.id,
             'text': self.text,
             'answers': [answer.serialize(show_correct_answers) for answer in self.answers],
+            'problem': self.problem.serialize()
         }
 
 
@@ -156,11 +145,13 @@ class Problem(db.Model):
         db.Integer, db.ForeignKey('knowledge_space.id'))
     questions = db.relationship('Question', backref='problem',
                                 lazy='dynamic')
+    weight = db.Column(db.Integer(), nullable=False)
 
     def serialize(self):
         return {
             'id': self.id,
             'name': self.title,
+            'weight': self.weight
 
         }
 

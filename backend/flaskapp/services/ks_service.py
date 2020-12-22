@@ -71,7 +71,7 @@ def add_ks(data):
 
 
     for p in problems:
-        problem = Problem(title=p['node_name'])
+        problem = Problem(title=p['node_name'], weight=p['weight'])
         ks.problems.append(problem)
         db.session.add(problem)
     

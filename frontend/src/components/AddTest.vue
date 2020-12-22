@@ -38,80 +38,66 @@
       v-model="testName"
       rows="1"
     ></v-textarea>
-    <v-card id="sectionCard" v-for="(sec, i) in sections" :key="i">
+    <v-card class="question-card" v-for="(obj, indx) in questions" :key="indx">
       <v-row>
         <v-col align="center">
-          <h2>Section No.{{ i + 1 }}</h2>
+          <h2>Question No.{{ indx + 1 }}</h2>
           <v-textarea
             class="textarea-question"
             auto-grow
-            label="Section name"
+            label="Question text"
             outlined
-            v-model="sec.text"
+            v-model="obj.text"
             rows="1"
             row-height="15"
           ></v-textarea>
-          <v-card
-            class="question-card"
-            v-for="(obj, indx) in sec.questions"
-            :key="indx"
-            width="90%"
-          >
-            <v-row>
-              <v-col align="center">
-                <h2>Question No.{{ indx + 1 }}</h2>
-                <v-textarea
-                  class="textarea-question"
-                  auto-grow
-                  label="Question text"
-                  outlined
-                  v-model="obj.text"
-                  rows="1"
-                  row-height="15"
-                ></v-textarea>
-                <v-autocomplete
-                  class="textarea-question"
-                  v-model="obj.problem"
-                  :items="nodes"
-                  item-text="name"
-                  item-value="id"
-                  dense
-                  chips
-                  small-chips
-                  label="Problem"
-                  solo
-                ></v-autocomplete>
-                <v-card max-width="90%">
-                  <v-container row v-for="(a, inde) in obj.answers" :key="inde">
-                    <v-textarea
-                      :label="'Answer No.' + (inde + 1)"
-                      auto-grow
-                      outlined
-                      v-model="obj.answers[inde].text"
-                      rows="1"
-                      row-height="15"
-                    ></v-textarea>
-                    <v-radio-group v-model="obj.answers[inde].is_true" row>
-                      <v-radio label="False" color="error"></v-radio>
-                      <v-radio label="True" color="success"></v-radio>
-                    </v-radio-group>
-                  </v-container>
-                  <v-btn icon outlined @click="addAnswer(obj)">
-                    <v-icon>mdi-plus</v-icon>
-                  </v-btn>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-btn outlined @click="addQuestion(sec)"> add question </v-btn>
+          <v-autocomplete
+            class="textarea-question"
+            v-model="obj.problem"
+            :items="nodes"
+            item-text="name"
+            item-value="id"
+            dense
+            chips
+            small-chips
+            label="Problem"
+            solo
+          ></v-autocomplete>
+          <v-card max-width="90%">
+            <v-container row v-for="(a, inde) in obj.answers" :key="inde">
+              <v-textarea
+                :label="'Answer No.' + (inde + 1)"
+                auto-grow
+                outlined
+                v-model="obj.answers[inde].text"
+                rows="1"
+                row-height="15"
+              ></v-textarea>
+              <v-radio-group v-model="obj.answers[inde].is_true" row>
+                <v-radio label="False" color="error"></v-radio>
+                <v-radio label="True" color="success"></v-radio>
+              </v-radio-group>
+            </v-container>
+            <v-btn id="btnAddAnswer" icon outlined @click="addAnswer(obj)">
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
           </v-card>
-          <v-btn outlined @click="addSection()"> add section </v-btn>
         </v-col>
       </v-row>
     </v-card>
+    <v-row>
+      <v-col align="center">
+        <v-btn icon outlined @click="addQuestion()">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-btn class="primary" @click="addTest()" :disabled="selectedKS === null">
+        Add Test
+      </v-btn>
+    </v-row>
 
-    <v-btn class="primary" @click="addTest()" :disabled="selectedKS === null">
-      Add Test
-    </v-btn>
     <graph-view
       v-bind:dialogToggle="this.toggleDialogClick"
       v-bind:show="this.dialogToggle"
@@ -129,11 +115,8 @@ export default {
   name: "AddTest",
   data() {
     return {
-      sections: [
-        {
-          text: "",
-          questions: [{ text: "", answers: [{ text: "", is_true: null }] }],
-        },
+      questions: [
+        { text: "", problem: "", answers: [{ text: "", is_true: null }] },
       ],
       testName: "",
       knowledgeSpaces: [],
@@ -146,25 +129,33 @@ export default {
   components: {
     GraphView,
   },
+  watch: {
+    getProblems(newValue, oldValue) {
+      for (let v of newValue.entries()) {
+        if (v[1] !== "") {
+          this.nodes.find((n) => n.id === v[1]).disabled = true;
+        }
+        if (oldValue.length === newValue.length) {
+          if (newValue[v[0]] !== oldValue[v[0]] && oldValue[v[0]] !== "") {
+            this.nodes.find((n) => n.id === oldValue[v[0]]).disabled = false;
+          }
+        }
+      }
+    },
+  },
   methods: {
     toggleDialogClick() {
       this.dialogToggle = !this.dialogToggle;
-   
     },
-    addQuestion(sec) {
-      sec.questions.push({
+    addQuestion() {
+      this.questions.push({
         text: "",
+        problem: "",
         answers: [{ text: "", is_true: null }],
       });
     },
     addAnswer(obj) {
       obj.answers.push({ text: "", is_true: null });
-    },
-    addSection() {
-      this.sections.push({
-        text: "",
-        questions: [{ text: "", answers: [{ text: "", is_true: null }] }],
-      });
     },
     getKS(value) {
       axios
@@ -193,7 +184,7 @@ export default {
             author: this.$store.state.loggedUser.username,
             test_name: this.testName,
             subject_name: this.getSubjectName,
-            sections: this.sections,
+            questions: this.questions,
           },
           {
             headers: {
@@ -227,6 +218,9 @@ export default {
     getSubjectName() {
       return this.$store.state.subjectTest;
     },
+    getProblems() {
+      return this.questions.map((question) => question.problem);
+    },
   },
 };
 </script>
@@ -239,10 +233,10 @@ export default {
 #seeGraph {
   margin-top: 1px !important;
 }
-#sectionCard {
-  margin-top: 20px !important;
-}
 .textarea-question {
   max-width: 90%;
+}
+#btnAddAnswer {
+  margin-bottom: 10px;
 }
 </style>

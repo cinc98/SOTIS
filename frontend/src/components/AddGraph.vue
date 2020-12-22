@@ -123,7 +123,14 @@ export default {
         });
       }
       for (let n of this.nodes.entries()) {
-        tempNodes.push({ node_name: n[1].name });
+        var asd = this.links.find((l) => l.tid === n[1].id);
+        if (asd === undefined) {
+          this.calculateNodeWeight(n[1].id);
+        }
+      }
+
+      for (let n of this.nodes.entries()) {
+        tempNodes.push({ node_name: n[1].name, weight: n[1].weight });
       }
 
       axios
@@ -147,16 +154,30 @@ export default {
           this.nodes = [];
           this.ksTitle = "";
           this.$router.push("/knowledge-spaces");
-
         })
         .catch((error) => {
           alert(error.response.data.message);
         });
     },
     addNode() {
-      this.nodes.push({ id: this.lastNodeId + 1, name: this.nodeName });
+      this.nodes.push({
+        id: this.lastNodeId + 1,
+        name: this.nodeName,
+        weight: 0,
+      });
       this.lastNodeId++;
       this.nodeName = null;
+    },
+    calculateNodeWeight(nodeID) {
+      var vm = this;
+
+      this.links.forEach(function (l) {
+        if (l.sid === nodeID) {
+          vm.nodes.find((x) => x.id === l.tid).weight +=
+            vm.nodes.find((x) => x.id === l.sid).weight + 1;
+          vm.calculateNodeWeight(l.tid);
+        }
+      });
     },
     clickNode(event, node) {
       if (this.clickedNode === null) {

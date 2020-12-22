@@ -124,6 +124,8 @@ export default {
       })
       .then((response) => {
         this.test = response.data.test;
+        this.test.questions = this.test.questions.sort((first, second) => parseInt(first.problem.weight) - parseInt(second.problem.weight))
+
       })
       .catch((error) => {
         alert(error);

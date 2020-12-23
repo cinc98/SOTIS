@@ -31,7 +31,6 @@
       v-bind:show="this.dialogToggle"
       v-bind:nodes="this.nodes"
       v-bind:links="this.links"
-
     />
   </v-container>
 </template>
@@ -47,7 +46,7 @@ export default {
       knowledgeSpaces: null,
       dialogToggle: false,
       nodes: [],
-      links: []
+      links: [],
     };
   },
   components: {
@@ -56,11 +55,11 @@ export default {
   methods: {
     toggleDialogClick() {
       this.dialogToggle = !this.dialogToggle;
-      this.nodes=[]
-      this.links=[]
+      this.nodes = [];
+      this.links = [];
     },
     seeGraph(title) {
-       this.$store.commit("addKsTitle", title);
+      this.$store.commit("addKsTitle", title);
       axios
         .get(`http://localhost:5000/ks/${title}`, {
           headers: {

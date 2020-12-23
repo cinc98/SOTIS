@@ -2,7 +2,14 @@ from flaskapp.models import *
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flaskapp.auth import token_required
 from flaskapp import db, app, bcrypt
+from flaskapp import kst_service
 routes = Blueprint('routes', __name__)
+
+
+@routes.route('/get-realks/<string:test_name>', methods=['GET'])
+def get_realks(test_name):
+
+    return kst_service.create_real_ks(test_name)
 
 
 @routes.route('/subjects/<string:username>', methods=['GET'])

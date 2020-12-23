@@ -67,7 +67,7 @@ def add_ks(data):
     if kss:
         return jsonify({'message': "this knowledge space title is taken"}), 400
 
-    ks = KnowledgeSpace(title=ks_title, domain_id=domain.id)
+    ks = KnowledgeSpace(title=ks_title, domain_id=domain.id, is_real=False)
 
 
     for p in problems:

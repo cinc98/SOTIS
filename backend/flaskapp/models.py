@@ -116,6 +116,14 @@ class TestQuestions(db.Model):
     question_id = db.Column(db.Integer(), db.ForeignKey(
         'question.id', ondelete='CASCADE'))
 
+    def serialize(self):
+        return {
+            'id': self.id,
+            'test_id': self.test_id,
+            'question_id': self.question_id
+
+        }
+
 
 class Answer(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -129,12 +137,15 @@ class Answer(db.Model):
             return {
                 'id': self.id,
                 'text': self.text,
-                'is_true': self.is_true
+                'is_true': self.is_true,
+                'question_id': self.question_id
             }
         else:
             return {
                 'id': self.id,
                 'text': self.text,
+                'question_id': self.question_id
+
             }
 
 
@@ -174,6 +185,7 @@ class Link(db.Model):
 class KnowledgeSpace(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     title = db.Column(db.String(255), nullable=False)
+    is_real = db.Column(db.Boolean(), nullable=False)
     domain_id = db.Column(db.Integer(), db.ForeignKey(
         'domain.id', ondelete='CASCADE'))
     problems = db.relationship('Problem', backref='knowledge_space',
@@ -187,6 +199,7 @@ class KnowledgeSpace(db.Model):
             'title': self.title,
             'problems': [problem.serialize() for problem in self.problems],
             'links': [link.serialize() for link in self.links],
+            'is_real': self.is_real
 
         }
 
@@ -217,3 +230,11 @@ class UserAnswers(db.Model):
     is_true = db.Column(db.Boolean(), nullable=False)
     answer = db.relationship("Answer", back_populates="users")
     user = db.relationship("User", back_populates="answers")
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user': self.user_id,
+            'answer': self.answer.serialize(True),
+            'student_answer': self.is_true
+        }

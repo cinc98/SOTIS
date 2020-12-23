@@ -11,7 +11,6 @@
               Domain
             </th>
             <th class="text-left"></th>
-            <th class="text-left"></th>
           </tr>
         </thead>
         <tbody>
@@ -41,10 +40,7 @@
               >
                 add domain
               </v-btn>
-            </td>
-            <td>
               <v-btn
-                v-if="user.roles[0].name == 'STUDENT'"
                 class="ma-2"
                 outlined
                 color="deep-purple accent-4"

@@ -24,6 +24,15 @@
               >
                 Start test
               </v-btn>
+              <v-btn
+                v-if="user.roles[0].name == 'PROFESSOR'"
+                class="ma-2"
+                outlined
+                color="deep-purple accent-4"
+                @click="createRKS(t.test_name)"
+              >
+                create real ks
+              </v-btn>
             </td>
           </tr>
         </tbody>
@@ -46,6 +55,21 @@ export default {
     startTest(name_test) {
       this.$store.commit("addTestName", name_test);
       this.$router.push("/test");
+    },
+    createRKS(name_test) {
+      axios
+        .get(`http://localhost:5000/get-realks/${name_test}`, {
+          headers: {
+            Authorization: sessionStorage.getItem("token"),
+          },
+        })
+        .then((response) => {
+          alert(response.data.message);
+          this.$router.push("/knowledge-spaces");
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+        });
     },
   },
   created() {

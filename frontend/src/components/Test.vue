@@ -90,14 +90,18 @@ export default {
               }
             )
             .then((response) => {
-              for (let [i, q] of response.data.test.questions.entries()) {
+              let sortedQuestion = response.data.test.questions.sort(
+                (first, second) =>
+                  parseInt(first.problem.weight) -
+                  parseInt(second.problem.weight)
+              );
+              for (let [i, q] of sortedQuestion.entries()) {
                 for (let [inde, a] of q.answers.entries()) {
-               
                   this.test.questions[i].answers[inde].correct_answer =
                     a.is_true;
-                  let test1 = this.test
-                  this.test = null
-                  this.test = test1
+                  let test1 = this.test;
+                  this.test = null;
+                  this.test = test1;
                 }
               }
             })
@@ -124,8 +128,10 @@ export default {
       })
       .then((response) => {
         this.test = response.data.test;
-        this.test.questions = this.test.questions.sort((first, second) => parseInt(first.problem.weight) - parseInt(second.problem.weight))
-
+        this.test.questions = this.test.questions.sort(
+          (first, second) =>
+            parseInt(first.problem.weight) - parseInt(second.problem.weight)
+        );
       })
       .catch((error) => {
         alert(error);

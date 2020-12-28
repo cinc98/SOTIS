@@ -44,7 +44,7 @@
                 class="ma-2"
                 outlined
                 color="deep-purple accent-4"
-                @click="seeTest(s.name)"
+                @click="seeTest(s.name,  s.domain.title)"
               >
                 see tests
               </v-btn>
@@ -72,8 +72,10 @@ export default {
       this.$store.commit("addSubjectName", name);
       this.$router.push("/add-test");
     },
-    seeTest(name) {
+    seeTest(name, domainTitle) {
       this.$store.commit("addSubjectName", name);
+      this.$store.commit("addDomainTitle", domainTitle);
+
       this.$router.push("/tests-list");
     },
     addDomain(name) {

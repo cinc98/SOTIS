@@ -21,6 +21,15 @@
               >
                 see graph
               </v-btn>
+              <v-btn
+                v-if="!k.title.includes(' - Real')"
+                class="ma-2"
+                outlined
+                color="deep-purple accent-4"
+                @click="compareGraphs(k.title)"
+              >
+                compare graphs
+              </v-btn>
             </th>
           </tr>
         </tbody>
@@ -57,6 +66,10 @@ export default {
       this.dialogToggle = !this.dialogToggle;
       this.nodes = [];
       this.links = [];
+    },
+    compareGraphs(title) {
+      this.$store.commit("addKsTitle", title);
+      this.$router.push("/compare-graphs");
     },
     seeGraph(title) {
       this.$store.commit("addKsTitle", title);

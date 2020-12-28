@@ -12,7 +12,7 @@ import UsersList from "../components/UsersList.vue"
 import AddDomain from "../components/AddDomain.vue"
 import DomainsList from "../components/DomainsList.vue"
 import KnowledgeSpacesList from "../components/KnowledgeSpacesList.vue"
-
+import CompareGraphs from "../components/CompareGraphs.vue"
 Vue.use(VueRouter);
 
 const routes = [
@@ -70,6 +70,11 @@ const routes = [
         path: "/knowledge-spaces",
         name: "KnowledgeSpacesList",
         component: KnowledgeSpacesList,
+      },
+      {
+        path: "/compare-graphs",
+        name: "CompareGraphs",
+        component: CompareGraphs,
       },
     ],
   },

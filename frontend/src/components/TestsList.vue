@@ -33,6 +33,15 @@
               >
                 create real ks
               </v-btn>
+              <v-btn
+                v-if="user.roles[0].name == 'PROFESSOR'"
+                class="ma-2"
+                outlined
+                color="deep-purple accent-4"
+                @click="exportqti(t.test_name)"
+              >
+                export to ims qti
+              </v-btn>
             </td>
           </tr>
         </tbody>
@@ -69,6 +78,28 @@ export default {
         })
         .catch((error) => {
           alert(error.response.data.message);
+        });
+    },
+    exportqti(name_test) {
+      axios
+        .post(
+          `http://localhost:5000/get-xml/${name_test}`,
+          {},
+          {
+            responseType: "arraybuffer",
+            headers: { Accept: "application/octet-stream" },
+          }
+        )
+        .then((response) => {
+          let blob = new Blob([response.data], { type: "application/zip" });
+          let link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = name_test + ".zip";
+
+          link.click();
+        })
+        .catch((error) => {
+          // alert(error.response.data.message);
         });
     },
   },

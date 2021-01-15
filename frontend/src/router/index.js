@@ -6,6 +6,7 @@ import AddTest from "../components/AddTest.vue";
 import SubjectsList from "../components/SubjectsList.vue";
 import TestsList from "../components/TestsList.vue";
 import Test from "../components/Test.vue";
+import DrivenTest from "../components/DrivenTest.vue";
 import AddGraph from "../components/AddGraph.vue";
 import AddSubject from "../components/AddSubject.vue"
 import UsersList from "../components/UsersList.vue"
@@ -75,6 +76,11 @@ const routes = [
         path: "/compare-graphs",
         name: "CompareGraphs",
         component: CompareGraphs,
+      },
+      {
+        path: "/test-driven",
+        name: "DrivenTest",
+        component: DrivenTest,
       },
     ],
   },

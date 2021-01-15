@@ -16,6 +16,29 @@ def get_realks(test_name):
     return kst_service.create_real_ks(test_name)
 
 
+
+
+@routes.route('/test/first-question/<string:test_name>', methods=['GET'])
+def get_test_first_question(test_name):
+    
+    return kst_service.get_first_question(test_name)
+
+
+@routes.route('/ks-states/<string:test_name>', methods=['GET'])
+def generate_knowledge_states(test_name):
+    
+    return kst_service.generate_knowledge_states(test_name)
+
+
+@routes.route('/test/next-question', methods=['POST'])
+def get_next_question():
+    data = request.get_json()
+
+    return kst_service.calculate_probabilities(data)
+
+     
+
+
 @routes.route('/get-xml/<string:test_name>', methods=['POST'])
 def get_xml_file(test_name):
 
@@ -253,6 +276,9 @@ def finishTest(current_user):
     return jsonify({'message': "test finished"}), 200
 
 
+
+
+
 @routes.route('/test-solution/<string:test_name>', methods=['GET'])
 @token_required
 def getTestSolution(current_user, test_name):
@@ -263,3 +289,4 @@ def getTestSolution(current_user, test_name):
         return jsonify({'message': "test doesn't exist"}), 400
 
     return jsonify({'test': test.serialize(True)}), 200
+

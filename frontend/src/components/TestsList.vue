@@ -25,6 +25,15 @@
                 Start test
               </v-btn>
               <v-btn
+                v-if="user.roles[0].name == 'STUDENT'"
+                class="ma-2"
+                outlined
+                color="deep-purple accent-4"
+                @click="startDrivenTest(t.test_name)"
+              >
+                Start driven test
+              </v-btn>
+              <v-btn
                 v-if="user.roles[0].name == 'PROFESSOR'"
                 class="ma-2"
                 outlined
@@ -64,6 +73,10 @@ export default {
     startTest(name_test) {
       this.$store.commit("addTestName", name_test);
       this.$router.push("/test");
+    },
+    startDrivenTest(name_test) {
+      this.$store.commit("addTestName", name_test);
+      this.$router.push("/test-driven");
     },
     createRKS(name_test) {
       axios

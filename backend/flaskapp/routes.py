@@ -16,7 +16,10 @@ def get_realks(test_name):
     return kst_service.create_real_ks(test_name)
 
 
-
+@routes.route('/all-states/<string:test_name>', methods=['GET'])
+def all_states(test_name):
+    
+    return kst_service.show_knowledge_states(test_name)
 
 @routes.route('/test/first-question/<string:test_name>', methods=['GET'])
 def get_test_first_question(test_name):
@@ -206,16 +209,19 @@ def createTest(current_user):
 
 
 class TestDTO:
-    def __init__(self, id, author, test_name):
+    def __init__(self, id, author, test_name, disabled):
         self.id = id
         self.author = author
         self.test_name = test_name
+        self.disabled=disabled
 
     def serialize(self):
         return {
             'id': self.id,
             'author': self.author,
             'test_name': self.test_name,
+            'disabled': self.disabled,
+
         }
 
 
@@ -231,9 +237,37 @@ def getTestsBySubject(current_user, subject_name):
     tests_list = []
     for test in subject.tests:
         user = User.query.filter_by(id=test.author_id).first()
-        tests_list.append(TestDTO(test.id, user.username, test.name))
+        if not tookTest(test, current_user):
+            tests_list.append(TestDTO(test.id, user.username, test.name, False))
+        else:
+            tests_list.append(TestDTO(test.id, user.username, test.name, True))
+
 
     return jsonify({'tests': [test.serialize() for test in tests_list]}), 200
+
+def tookTest(new_test, user):
+
+    student_answers = user.answers
+
+    questions = []
+
+    for sa in student_answers:
+         a = Answer.query.filter_by(id=sa.answer_id).first()
+         if a.question_id not in questions:
+            questions.append(a.question_id)
+
+    tests=[]
+    for q in questions:
+        question = TestQuestions.query.filter_by(question_id=q).first()
+        test = Test.query.filter_by(id=question.test_id).first()
+        if test not in tests:
+            tests.append(test)
+
+    if new_test in tests:
+        return True
+    else:
+        return False
+
 
 
 @routes.route('/test/<string:test_name>', methods=['GET'])

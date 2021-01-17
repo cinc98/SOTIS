@@ -37,7 +37,7 @@
       >add subject</v-btn
     >
 
-        <v-btn
+    <v-btn
       v-if="user.roles[0].name == 'ADMIN'"
       text
       class="add-question-btn"
@@ -49,6 +49,8 @@
       >users</v-btn
     >
 
+ 
+
     <v-btn
       v-if="user.roles[0].name == 'STUDENT'"
       text
@@ -59,6 +61,18 @@
         }
       "
       >tests</v-btn
+    >
+
+       <v-btn
+      v-if="user.roles[0].name == 'STUDENT'"
+      text
+      class="add-question-btn"
+      @click="
+        () => {
+          this.$router.push('/student-results');
+        }
+      "
+      >results</v-btn
     >
     <v-spacer></v-spacer>
 

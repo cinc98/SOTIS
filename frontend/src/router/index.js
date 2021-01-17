@@ -8,12 +8,14 @@ import TestsList from "../components/TestsList.vue";
 import Test from "../components/Test.vue";
 import DrivenTest from "../components/DrivenTest.vue";
 import AddGraph from "../components/AddGraph.vue";
-import AddSubject from "../components/AddSubject.vue"
-import UsersList from "../components/UsersList.vue"
-import AddDomain from "../components/AddDomain.vue"
-import DomainsList from "../components/DomainsList.vue"
-import KnowledgeSpacesList from "../components/KnowledgeSpacesList.vue"
-import CompareGraphs from "../components/CompareGraphs.vue"
+import AddSubject from "../components/AddSubject.vue";
+import UsersList from "../components/UsersList.vue";
+import AddDomain from "../components/AddDomain.vue";
+import DomainsList from "../components/DomainsList.vue";
+import KnowledgeSpacesList from "../components/KnowledgeSpacesList.vue";
+import CompareGraphs from "../components/CompareGraphs.vue";
+import StudentResults from "../components/StudentResults.vue";
+import TestReview from "../components/TestReview.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -81,6 +83,16 @@ const routes = [
         path: "/test-driven",
         name: "DrivenTest",
         component: DrivenTest,
+      },
+      {
+        path: "/student-results",
+        name: "StudentResults",
+        component: StudentResults,
+      },
+      {
+        path: "/test-review",
+        name: "TestReview",
+        component: TestReview,
       },
     ],
   },

@@ -84,7 +84,6 @@ export default {
                 this.test = response.data.test;
                 this.probabilities = response.data.probabilities;
                 this.asked_questions = response.data.asked_questions;
-                                console.log(response.data.probabilities);
 
               }else{
                 alert("gotov test")
@@ -119,7 +118,6 @@ export default {
         this.test = response.data.test;
         this.probabilities = response.data.probabilities;
         this.asked_questions = response.data.asked_questions;
-                                        console.log(response.data.probabilities);
 
       })
       .catch((error) => {

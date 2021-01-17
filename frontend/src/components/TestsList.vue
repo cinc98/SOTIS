@@ -16,6 +16,7 @@
             <td>{{ t.author }}</td>
             <td>
               <v-btn
+                :disabled=t.disabled
                 v-if="user.roles[0].name == 'STUDENT'"
                 class="ma-2"
                 outlined
@@ -25,6 +26,7 @@
                 Start test
               </v-btn>
               <v-btn
+                :disabled=t.disabled
                 v-if="user.roles[0].name == 'STUDENT'"
                 class="ma-2"
                 outlined

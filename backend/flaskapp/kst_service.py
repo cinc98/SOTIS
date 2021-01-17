@@ -133,36 +133,29 @@ def is_question_correct(questions):
 def calculate_probabilities(data):
 
     test = data.get('test')
-
-
+    probabilities = data.get('probabilities')
     asked_questions = data.get('asked_questions')
+
 
     asked_questions.append(test['questions'])
 
     test1 = Test.query.filter_by(id=test['id']).first()
     questions = test1.questions
-    probabilities = data.get('probabilities')
 
     ks = get_ks_by_test(test['name'])
 
-    sorted_questions = sorted(questions, key=lambda i: i.problem.weight)
-    node = None
+    all_problems = [p for p in ks.problems]
+    sorted_problems = sorted(all_problems, key=lambda i: i.weight)
 
-    for p in ks.problems:
-        if p.title == test['questions'][0]['problem']['name']:
-            node=p
+    sorted_questions = []
+    for sp in sorted_problems:
+        sorted_questions.append(sp.questions[0])   
 
-
-
+    node = [n for n in ks.problems if n.title == test['questions'][0]['problem']['name']]
 
     problem = [1 if p.title == test['questions'][0]['problem']['name'] else 0 for p in ks.problems]
-    
 
-    problem_index = None;
-
-    for i, p in enumerate(problem):
-        if p == 1:
-            problem_index = i
+    problem_index = problem.index(max(problem))
 
 
 
@@ -172,10 +165,10 @@ def calculate_probabilities(data):
             if problem_index != None:
                 if key[problem_index] == '1':
 
-                    probabilities[key] = 1.25*values
+                    probabilities[key] = 1.5*values
 
                 else:
-                    probabilities[key] = values*0.75
+                    probabilities[key] = values*0.5
     else:
          for key, values in probabilities.items():
             if problem_index != None:
@@ -202,25 +195,45 @@ def calculate_probabilities(data):
 
 
     else:
-        non_asked = is_question_asked(asked_questions, sorted_questions, most_common)
-        
-        if non_asked == None:
-            print("nema pitanja")
-            return jsonify({'probabilities': probabilities}), 200
+        if is_question_correct(test['questions']):
+
+            nodes_above = get_nodes_above(node[0],ks)
+
+            non_asked = non_asked_question(asked_questions, sorted_questions, nodes_above, most_common)
+
+            if non_asked == None:
+                print("nema pitanja")
+                return jsonify({'probabilities': probabilities}), 200
 
 
-        ret_test.questions = [non_asked]
-        print(most_common)
-        return jsonify({'probabilities': probabilities, 'asked_questions': asked_questions, 'test': ret_test.serialize(False)}), 200
+            ret_test.questions = [non_asked]
+            return jsonify({'probabilities': probabilities, 'asked_questions': asked_questions, 'test': ret_test.serialize(False)}), 200
+
+        else:
+            nodes_under = get_nodes_under(node[0],ks)
+
+            non_asked = non_asked_question(asked_questions, sorted_questions, nodes_under, most_common)
+
+            if non_asked == None:
+                print("nema pitanja")
+                return jsonify({'probabilities': probabilities}), 200
+
+
+            ret_test.questions = [non_asked]
+            return jsonify({'probabilities': probabilities, 'asked_questions': asked_questions, 'test': ret_test.serialize(False)}), 200
 
 
 
-def is_question_asked(asked, sorted_questions, most_common):
+def non_asked_question(asked, sorted_questions, nodes, most_common):
     new_ask = []
     for a in asked:
         for sq in sorted_questions:
             if a[0]['id'] == sq.id:
                 new_ask.append(sq)
+
+    for n in nodes:
+        if n.questions[0] not in new_ask:
+            return n.questions[0]
 
     maks = max([i for i, ltr in enumerate(most_common) if ltr == '1'])
     contains = True
@@ -285,7 +298,12 @@ def get_first_question(test_name):
     for k in ks_states:
         stanja_znanja[k] = 0
 
-    sorted_questions = sorted(questions, key=lambda i: i.problem.weight)
+    all_problems = [p for p in ks.problems]
+    sorted_problems = sorted(all_problems, key=lambda i: i.weight)
+
+    sorted_questions = []
+    for sp in sorted_problems:
+        sorted_questions.append(sp.questions[0])
 
     # students_answers = get_matrix(test_name)
 
@@ -328,12 +346,12 @@ def get_dict_from_pisa():
 
 def generate_knowledge_states(test_name):
 
-    # test = Test.query.filter_by(name=test_name).first()
     ks = get_ks_by_test(test_name)
 
     all_problems = [p for p in ks.problems]
+    sorted_problems = sorted(all_problems, key=lambda i: i.weight)
 
-    start_problem = all_problems[0]
+    start_problem = sorted_problems[0]
     len_problems = len(all_problems)
 
     matrix = []
@@ -343,8 +361,9 @@ def generate_knowledge_states(test_name):
     curr_lst = ["0" for i in range(len_problems)]
     curr_lst[0] = "1"
 
-    matrix = get_states(all_problems, start_problem,
+    matrix = get_states(sorted_problems, start_problem,
                         matrix, len_problems, curr_lst)
+
 
     for bc in list(combinations(matrix, 2)):
         # print( str(int(bc[0], base=2)) + " + " + str(int(bc[1], base=2)) + " = " + str(int(bc[0], base=2) | int(bc[1], base=2)))
@@ -352,6 +371,8 @@ def generate_knowledge_states(test_name):
         if str(bin(int(bc[0], base=2) | int(bc[1], base=2))).split('b')[1] not in matrix:
             matrix.append(
                 str(bin(int(bc[0], base=2) | int(bc[1], base=2))).split('b')[1])
+
+
 
     return matrix
 
@@ -387,3 +408,72 @@ def get_links(start_problem):
             links.append(l)
 
     return links
+
+
+def show_knowledge_states(test_name):
+
+    ks = get_ks_by_test(test_name)
+
+    new_ks = KnowledgeSpace()
+
+    new_ks.title = ks.title + ' - All states'
+
+    p = Problem()
+    p.id= 0
+    p.title='0'
+    new_ks.problems.append(p)
+
+    all_problems = [p for p in ks.problems]
+    sorted_problems = sorted(all_problems, key=lambda i: i.weight)
+
+    problems={}
+    for i,s in enumerate(sorted_problems):
+        problems[i]= s.title
+
+
+    ks_states = generate_knowledge_states(test_name)
+
+
+    for state in ks_states:
+        state_indices = [i for i, ltr in enumerate(state) if ltr == '1']
+        p = Problem()
+        p.id = int(state, base=2)
+        p.title=''
+        if len(state_indices) == len(all_problems):
+            p.id = int(state, base=2)
+            p.title += 'Q'
+            new_ks.problems.append(p)
+        else:
+            for si in state_indices:
+                p.title += problems[si]+ ' '
+                new_ks.problems.append(p)
+
+    new_ks.links = generate_links(new_ks.problems)
+
+
+    return jsonify({'knowledge_space': new_ks.serialize()}), 200
+
+
+def generate_links(states):
+    links = []
+    for s in states:
+        binary_sid = bin(s.id).split('b')[1]
+        num_of_nodes_source = binary_sid.count("1")
+        for t in states:
+            binary_tid = bin(t.id).split('b')[1]
+            num_of_nodes_target = binary_tid.count("1")
+            if num_of_nodes_target - num_of_nodes_source == 1:
+                if one_bit_off(binary_sid, binary_tid):
+                    l = Link()
+                    l.source_id = s.id
+                    l.target_id = t.id
+                    links.append(l)
+
+    return links
+
+def one_bit_off(source, target):
+    # print(str(bin(int(source, base=2) ^ int(target, base=2))).split('b')[1].count('1'))
+    if str(bin(int(source, base=2) ^ int(target, base=2))).split('b')[1].count('1') == 1:
+        return True
+    else:
+        return False

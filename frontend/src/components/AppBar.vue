@@ -25,6 +25,18 @@
       >domains</v-btn
     >
 
+     <v-btn
+      v-if="user.roles[0].name == 'PROFESSOR'"
+      text
+      class="add-question-btn"
+      @click="
+        () => {
+          this.$router.push('/students');
+        }
+      "
+      >Students</v-btn
+    >
+
     <v-btn
       v-if="user.roles[0].name == 'ADMIN'"
       text

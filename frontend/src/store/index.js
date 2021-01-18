@@ -9,11 +9,15 @@ export default new Vuex.Store({
     loggedUser: { roles: [{ name: "" }] },
     testName: "",
     domainTitle: "",
-    ksTitle: ""
+    ksTitle: "",
+    student: {username: "",  roles: [{ name: "STUDENT" }]}
   },
   mutations: {
     addSubjectName(state, subject) {
       state.subjectTest = subject;
+    },
+    addStudent(state, username) {
+      state.student.username = username;
     },
     addKsTitle(state, title) {
       state.ksTitle = title;

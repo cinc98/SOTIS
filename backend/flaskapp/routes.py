@@ -16,10 +16,10 @@ def get_realks(test_name):
     return kst_service.create_real_ks(test_name)
 
 
-@routes.route('/all-states/<string:test_name>', methods=['GET'])
-def all_states(test_name):
+@routes.route('/all-states/<string:student_name>/<string:test_name>', methods=['GET'])
+def all_states(test_name, student_name):
     
-    return kst_service.show_knowledge_states(test_name)
+    return kst_service.show_knowledge_states(test_name,student_name)
 
 @routes.route('/test/first-question/<string:test_name>', methods=['GET'])
 def get_test_first_question(test_name):
@@ -34,10 +34,11 @@ def generate_knowledge_states(test_name):
 
 
 @routes.route('/test/next-question', methods=['POST'])
-def get_next_question():
+@token_required
+def get_next_question(current_user):
     data = request.get_json()
 
-    return kst_service.calculate_probabilities(data)
+    return kst_service.calculate_probabilities(data, current_user)
 
      
 

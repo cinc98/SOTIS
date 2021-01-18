@@ -19,15 +19,18 @@ def addSubjectsToUser(current_user):
     return user_service.addSubjectsToUser(data)
 
 
-@user.route('/student-tests', methods=['GET'])
+@user.route('/student-tests/<string:username>', methods=['GET'])
+def getStudentTests(username):
+
+    return user_service.getStudentTests(username)
+
+
+@user.route('/student-answers/<string:username>/<string:test_name>', methods=['GET'])
+def getStudentAnswers(username, test_name):
+
+    return user_service.getStudentAnswers(username, test_name)
+
+@user.route('/students', methods=['GET'])
 @token_required
-def getStudentTests(current_user):
-
-    return user_service.getStudentTests(current_user)
-
-
-@user.route('/student-answers/<string:test_name>', methods=['GET'])
-@token_required
-def getStudentAnswers(current_user, test_name):
-
-    return user_service.getStudentAnswers(current_user, test_name)
+def getStudents(current_user):
+    return user_service.getStudents(current_user)

@@ -1,5 +1,6 @@
 <template>
-    <v-container>
+  <v-container>
+    <h1>Tests</h1>
     <v-simple-table>
       <template>
         <thead>
@@ -38,7 +39,6 @@ export default {
   data() {
     return {
       tests: null,
-      user: this.$store.state.loggedUser,
     };
   },
   methods: {
@@ -47,16 +47,17 @@ export default {
       this.$router.push("/test-review");
     },
   },
+  computed: {
+    user() {
+      if (this.$store.state.loggedUser.roles[0].name == 'STUDENT')
+        return this.$store.state.loggedUser;
+      else
+        return this.$store.state.student
+    },
+  },
   created() {
     axios
-      .get(
-        `http://localhost:5000/student-tests`,
-        {
-          headers: {
-            Authorization: sessionStorage.getItem("token"),
-          },
-        }
-      )
+      .get(`http://localhost:5000/student-tests/${this.user.username}`)
       .then((response) => {
         this.tests = response.data.tests;
       })
@@ -68,5 +69,4 @@ export default {
 </script>
 
 <style>
-
 </style>

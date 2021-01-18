@@ -130,7 +130,7 @@ def is_question_correct(questions):
     return True
 
 
-def calculate_probabilities(data):
+def calculate_probabilities(data, current_user):
 
     test = data.get('test')
     probabilities = data.get('probabilities')
@@ -147,13 +147,14 @@ def calculate_probabilities(data):
     all_problems = [p for p in ks.problems]
     sorted_problems = sorted(all_problems, key=lambda i: i.weight)
 
+
     sorted_questions = []
     for sp in sorted_problems:
         sorted_questions.append(sp.questions[0])   
 
-    node = [n for n in ks.problems if n.title == test['questions'][0]['problem']['name']]
+    node = [n for n in sorted_problems if n.title == test['questions'][0]['problem']['name']]
 
-    problem = [1 if p.title == test['questions'][0]['problem']['name'] else 0 for p in ks.problems]
+    problem = [1 if p.title == test['questions'][0]['problem']['name'] else 0 for p in sorted_problems]
 
     problem_index = problem.index(max(problem))
 
@@ -186,11 +187,19 @@ def calculate_probabilities(data):
 
     ret_test = test1
 
+    print(probabilities)
+
     print(most_common)
     print(float(probabilities[most_common]))
  
     if most_common == '00000':
         print("nista ne zna")
+        state = UserStates()
+        state.user_id = current_user.id
+        state.test_id = test1.id
+        state.state = most_common
+        db.session.add(state)
+        db.session.commit()
         return jsonify({'probabilities': probabilities}), 200
 
 
@@ -198,11 +207,17 @@ def calculate_probabilities(data):
         if is_question_correct(test['questions']):
 
             nodes_above = get_nodes_above(node[0],ks)
-
+            print(nodes_above)
             non_asked = non_asked_question(asked_questions, sorted_questions, nodes_above, most_common)
 
             if non_asked == None:
                 print("nema pitanja")
+                state = UserStates()
+                state.user_id = current_user.id
+                state.test_id = test1.id
+                state.state = most_common
+                db.session.add(state)
+                db.session.commit()
                 return jsonify({'probabilities': probabilities}), 200
 
 
@@ -216,6 +231,12 @@ def calculate_probabilities(data):
 
             if non_asked == None:
                 print("nema pitanja")
+                state = UserStates()
+                state.user_id = current_user.id
+                state.test_id = test1.id
+                state.state = most_common
+                db.session.add(state)
+                db.session.commit()
                 return jsonify({'probabilities': probabilities}), 200
 
 
@@ -230,6 +251,8 @@ def non_asked_question(asked, sorted_questions, nodes, most_common):
         for sq in sorted_questions:
             if a[0]['id'] == sq.id:
                 new_ask.append(sq)
+
+    nodes = sorted(nodes, key=lambda i: i.weight)
 
     for n in nodes:
         if n.questions[0] not in new_ask:
@@ -373,7 +396,6 @@ def generate_knowledge_states(test_name):
                 str(bin(int(bc[0], base=2) | int(bc[1], base=2))).split('b')[1])
 
 
-
     return matrix
 
 
@@ -396,6 +418,7 @@ def get_states(all_problems, start_problem, matrix, len_problems, curr_lst, visi
         curr_str = "".join(curr_lst)
         if curr_str not in matrix:
             matrix.append(curr_str)
+
     return matrix
 
 
@@ -410,7 +433,12 @@ def get_links(start_problem):
     return links
 
 
-def show_knowledge_states(test_name):
+def show_knowledge_states(test_name,student_name):
+
+    test = Test.query.filter_by(name=test_name).first()
+    user = User.query.filter_by(username=student_name).first()
+
+    user_state = UserStates.query.filter_by(test_id=test.id).filter_by(user_id=user.id).first()
 
     ks = get_ks_by_test(test_name)
 
@@ -451,7 +479,7 @@ def show_knowledge_states(test_name):
     new_ks.links = generate_links(new_ks.problems)
 
 
-    return jsonify({'knowledge_space': new_ks.serialize()}), 200
+    return jsonify({'knowledge_space': new_ks.serialize(), 'state': user_state.serialize()}), 200
 
 
 def generate_links(states):

@@ -40,7 +40,9 @@ class TestDTO:
 
 
 
-def getStudentTests(student):
+def getStudentTests(username):
+
+    student = User.query.filter_by(username=username).first()
 
     student_answers = student.answers 
 
@@ -64,7 +66,9 @@ def getStudentTests(student):
 
     return jsonify({'tests': tests}), 200
 
-def getStudentAnswers(student,test_name):
+def getStudentAnswers(username,test_name):
+
+    student = User.query.filter_by(username=username).first()
 
     test = Test.query.filter_by(name=test_name).first()
 
@@ -82,5 +86,17 @@ def getStudentAnswers(student,test_name):
 
     return jsonify({'answers': test_answers}), 200
 
+def getStudents(profesor):
+
+
+    students = User.query.filter(User.roles.any(name='STUDENT'))
+
+    ret_students = []
+    for s in students:
+        for ps in profesor.subjects:
+            if ps in s.subjects:
+                ret_students.append(s)
+
+    return jsonify({'students': [student.serialize() for student in ret_students]}), 200
 
 

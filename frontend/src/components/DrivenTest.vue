@@ -74,20 +74,28 @@ export default {
         )
         .then((response) => {
           axios
-            .post(`http://localhost:5000/test/next-question`, {
-              test: this.test,
-              probabilities: this.probabilities,
-              asked_questions: this.asked_questions,
-            })
+            .post(
+              `http://localhost:5000/test/next-question`,
+              {
+                test: this.test,
+                probabilities: this.probabilities,
+                asked_questions: this.asked_questions,
+              },
+              {
+                headers: {
+                  Authorization: sessionStorage.getItem("token"),
+                },
+              }
+            )
             .then((response) => {
               if (response.data.test !== undefined) {
                 this.test = response.data.test;
                 this.probabilities = response.data.probabilities;
                 this.asked_questions = response.data.asked_questions;
-
-              }else{
-                alert("gotov test")
+              } else {
+                alert("gotov test");
                 console.log(response.data.probabilities);
+                this.$router.push('/student-results');
               }
             })
             .catch((error) => {
@@ -118,7 +126,6 @@ export default {
         this.test = response.data.test;
         this.probabilities = response.data.probabilities;
         this.asked_questions = response.data.asked_questions;
-
       })
       .catch((error) => {
         alert(error);

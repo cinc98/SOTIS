@@ -16,6 +16,8 @@ import KnowledgeSpacesList from "../components/KnowledgeSpacesList.vue";
 import CompareGraphs from "../components/CompareGraphs.vue";
 import StudentResults from "../components/StudentResults.vue";
 import TestReview from "../components/TestReview.vue";
+import StudentsList from "../components/StudentsList.vue";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -93,6 +95,11 @@ const routes = [
         path: "/test-review",
         name: "TestReview",
         component: TestReview,
+      },
+      {
+        path: "/students",
+        name: "StudentsList",
+        component: StudentsList,
       },
     ],
   },

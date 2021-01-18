@@ -238,3 +238,19 @@ class UserAnswers(db.Model):
             'answer': self.answer.serialize(True),
             'student_answer': self.is_true
         }
+
+class UserStates(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey(
+        'user.id', ondelete='CASCADE'))
+    test_id = db.Column(db.Integer(), db.ForeignKey(
+        'test.id', ondelete='CASCADE'))
+    state = db.Column(db.String(255), nullable=False)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user': self.user_id,
+            'test': self.test_id,
+            'state': self.state
+        }

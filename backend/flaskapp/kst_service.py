@@ -166,19 +166,19 @@ def calculate_probabilities(data, current_user):
             if problem_index != None:
                 if key[problem_index] == '1':
 
-                    probabilities[key] = 1.5*values
+                    probabilities[key] = 2*values
 
                 else:
-                    probabilities[key] = values*0.5
+                    probabilities[key] = values/4
     else:
          for key, values in probabilities.items():
             if problem_index != None:
                 if key[problem_index] == '1':
 
-                    probabilities[key] = 0.5*values
+                    probabilities[key] = values/4
 
                 else:
-                    probabilities[key] = values*1.5
+                    probabilities[key] = values*2
     
     
 
@@ -202,7 +202,15 @@ def calculate_probabilities(data, current_user):
         db.session.commit()
         return jsonify({'probabilities': probabilities}), 200
 
-
+    elif most_common == '11111':
+        print("sve zna")
+        state = UserStates()
+        state.user_id = current_user.id
+        state.test_id = test1.id
+        state.state = most_common
+        db.session.add(state)
+        db.session.commit()
+        return jsonify({'probabilities': probabilities}), 200
     else:
         if is_question_correct(test['questions']):
 
